@@ -1,0 +1,234 @@
+.group-creation {
+  min-height: 100vh;
+  background: $background-primary;
+
+  // ヘッダー
+  .header {
+    background: $grace-orange !important;
+
+    .header-container {
+      .app-title {
+        font-size: $font-size-xxl;
+        font-weight: $font-weight-bold;
+        margin: 0;
+        color: white;
+      }
+    }
+  }
+
+  // メインコンテンツ
+  .main-content {
+    padding-top: $spacing-lg;
+  }
+
+  .form-container {
+    padding: $spacing-xl 0;
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+
+    .form-title {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+      margin: 0;
+    }
+  }
+
+  .creation-form {
+    .form-field {
+      margin-bottom: $spacing-xl;
+
+      .field-label {
+        display: block;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $text-secondary;
+        margin-bottom: $spacing-sm;
+      }
+
+      .input-field {
+        max-width: 372px;
+        flex-shrink: 0;
+        min-width: 200px;
+        .v-field__outline {
+          border-color: rgba($grace-orange, 0.3);
+        }
+
+        &:focus-within {
+          .v-field__outline {
+            border-color: $grace-orange;
+          }
+        }
+      }
+
+      .member-input-container {
+        display: flex;
+        gap: $spacing-md;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        min-width: 0;
+        overflow: hidden;
+
+        .member-input {
+          max-width: 372px;
+          flex-shrink: 0;
+          min-width: 200px;
+        }
+
+        .add-button {
+          display: flex;
+          margin-bottom: 12px;
+          max-width: 72px;
+          min-width: 72px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: $grace-orange !important;
+          color: white !important;
+          font-weight: $font-weight-medium;
+          padding: $spacing-md $spacing-lg;
+          border-radius: $border-radius-md;
+          transition: $transition-normal;
+          flex-shrink: 0;
+
+          &:hover {
+            transform: translateY(-1px);
+            box-shadow: $shadow-md;
+          }
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .member-list-container {
+        margin-top: $spacing-lg;
+
+        .member-list {
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-sm;
+
+          .member-item {
+            display: flex;
+            align-items: center;
+            gap: $spacing-md;
+            padding: $spacing-md;
+            background: rgba($grace-orange, 0.1);
+            border: 1px solid rgba($grace-orange, 0.3);
+            border-radius: $border-radius-md;
+
+            .member-number {
+              font-weight: $font-weight-medium;
+              color: $grace-orange;
+              min-width: 80px;
+            }
+
+            .member-name {
+              flex: 1;
+              color: $text-primary;
+            }
+
+            .remove-button {
+              color: #ef4444 !important;
+              
+              &:hover {
+                background: rgba(239, 68, 68, 0.1);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .form-actions {
+      margin-top: $spacing-xxl;
+      text-align: center;
+
+      .submit-button {
+        background: $grace-orange !important;
+        color: white !important;
+        font-weight: $font-weight-bold;
+        padding: $spacing-md $spacing-xxl;
+        border-radius: $border-radius-md;
+        box-shadow: $shadow-md;
+        transition: $transition-normal;
+        display: flex;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: $shadow-lg;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  // フッター
+  .footer {
+    background: #325361 !important;
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      .footer-link {
+        color: white;
+        text-decoration: none;
+        font-size: $font-size-sm;
+        transition: $transition-normal;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .copyright {
+      color: #D1D5DB;
+      font-size: $font-size-xs;
+      margin: 0;
+    }
+  }
+}
+
+// レスポンシブ対応
+@media (max-width: $breakpoint-md) {
+  .group-creation {
+    .form-container {
+      padding: $spacing-lg 0;
+    }
+
+    .creation-form {
+      .form-field {
+        .member-input-container {
+          align-items: stretch;
+
+          .add-button {
+            min-width: 72px;
+            margin-top: 12px;
+          }
+        }
+      }
+
+      .form-actions {
+        .submit-button {
+          width: 100%;
+          padding: $spacing-md $spacing-lg;
+        }
+      }
+    }
+  }
+}

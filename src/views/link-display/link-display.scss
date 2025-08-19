@@ -1,0 +1,186 @@
+@import "@/styles/variables.scss";
+
+.link-display {
+  min-height: 100vh;
+  background: linear-gradient(135deg, $grace-orange, lighten($grace-orange, 20%));
+
+  .header {
+    background: $grace-orange !important;
+    
+    .header-container {
+      .app-title {
+        font-size: 2rem;
+        font-weight: $font-weight-bold;
+        color: white;
+        margin: 0;
+      }
+    }
+  }
+
+  .main-content {
+    padding-top: 0;
+    
+    .content-container {
+      padding: $spacing-xl 0;
+      
+      .completion-message {
+        text-align: center;
+        margin-bottom: $spacing-xl;
+        
+        .success-icon {
+          margin-bottom: $spacing-md;
+          
+          .v-icon {
+            color: $success !important;
+          }
+        }
+        
+        .completion-title {
+          font-size: 2rem;
+          font-weight: $font-weight-bold;
+          color: white;
+          margin-bottom: $spacing-sm;
+        }
+        
+        .completion-subtitle {
+          font-size: 1.1rem;
+          color: rgba(255, 255, 255, 0.9);
+          margin: 0;
+        }
+      }
+      
+      .link-cards {
+        margin-bottom: $spacing-xl;
+        
+        .link-card {
+          margin-bottom: $spacing-lg;
+          border-radius: $border-radius-lg;
+          
+          .link-title {
+            background: $grace-orange;
+            color: white;
+            font-weight: $font-weight-bold;
+            padding: $spacing-md;
+            
+            .v-icon {
+              color: white !important;
+            }
+          }
+          
+          .v-card-text {
+            padding: $spacing-lg;
+            
+            .url-display {
+              display: flex;
+              gap: $spacing-md;
+              margin-bottom: $spacing-md;
+              align-items: flex-start;
+              
+              .url-input {
+                flex: 1;
+                
+                .v-field__input {
+                  background: rgba(0, 0, 0, 0.05);
+                  border-radius: $border-radius-sm;
+                }
+              }
+              
+              .copy-button {
+                white-space: nowrap;
+                min-width: 80px;
+              }
+            }
+            
+            .share-buttons {
+              display: flex;
+              gap: $spacing-sm;
+              flex-wrap: wrap;
+              
+              .share-button {
+                flex: 1;
+                min-width: 120px;
+              }
+            }
+          }
+        }
+      }
+      
+      .security-section {
+        text-align: center;
+        margin-bottom: $spacing-xl;
+        
+        .pin-button {
+          font-weight: $font-weight-medium;
+          padding: $spacing-md $spacing-lg;
+        }
+      }
+      
+      .next-steps {
+        text-align: center;
+        
+        .next-button {
+          font-size: 1.1rem;
+          font-weight: $font-weight-bold;
+          padding: $spacing-md $spacing-xl;
+        }
+      }
+    }
+  }
+  
+  .footer {
+    margin-top: auto;
+    
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-md;
+      justify-content: center;
+      
+      .footer-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-size: 0.9rem;
+        
+        &:hover {
+          color: white;
+          text-decoration: underline;
+        }
+      }
+    }
+    
+    .copyright {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      margin: 0;
+    }
+  }
+}
+
+// レスポンシブ対応
+@media (max-width: 768px) {
+  .link-display {
+    .main-content {
+      .content-container {
+        .link-cards {
+          .link-card {
+            .v-card-text {
+              .url-display {
+                flex-direction: column;
+                
+                .copy-button {
+                  width: 100%;
+                }
+              }
+              
+              .share-buttons {
+                .share-button {
+                  flex: 1 1 100%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,327 @@
+.service-intro {
+  min-height: 100vh;
+  background: $background-primary;
+
+  // ヘッダー
+  .header {
+    background: $grace-orange !important;
+
+    .header-container {
+      .app-title {
+        font-size: $font-size-xxl;
+        font-weight: $font-weight-bold;
+        margin: 0;
+        color: white;
+      }
+    }
+  }
+
+  // ヒーローセクション
+  .hero-section {
+    padding: $spacing-xxl 0;
+    background: $grace-orange;
+    color: white;
+    position: relative;
+    overflow: hidden;
+
+    .hero-container {
+      .hero-content {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+      }
+
+      .hero-title {
+        font-size: $font-size-xxl;
+        font-weight: $font-weight-bold;
+        line-height: 1.2;
+        margin-bottom: $spacing-lg;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .hero-subtitle {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-regular;
+        line-height: 1.6;
+        margin-bottom: $spacing-xl;
+        opacity: 0.9;
+      }
+
+      .hero-button {
+        border-color: white !important;
+        color: white !important;
+        font-weight: $font-weight-bold;
+        padding: $spacing-md $spacing-xl;
+        border-radius: $border-radius-lg;
+        transition: $transition-normal;
+
+        &:hover {
+          background: white !important;
+          color: $grace-orange !important;
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+
+  // 特徴紹介セクション
+  .features-section {
+    padding: $spacing-xxl 0;
+    background: $background-primary;
+
+    .section-title {
+      font-size: $font-size-xxl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+      margin-bottom: $spacing-xxl;
+    }
+
+    .feature-card {
+      padding: $spacing-xl;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: $transition-normal;
+
+      &:hover {
+        transform: translateY(-4px);
+      }
+
+      .feature-image {
+        margin-bottom: $spacing-lg;
+      }
+
+      .feature-icon {
+        color: $grace-orange !important;
+      }
+
+      .feature-title {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        color: $text-primary;
+        margin-bottom: $spacing-md;
+        text-align: center;
+      }
+
+      .feature-description {
+        font-size: $font-size-md;
+        color: $text-secondary;
+        line-height: 1.6;
+        text-align: center;
+      }
+    }
+  }
+
+  // ユースケースセクション
+  .usecases-section {
+    padding: $spacing-xxl 0;
+    background: $background-secondary;
+
+    .section-title {
+      font-size: $font-size-xxl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+      margin-bottom: $spacing-xxl;
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-md;
+      justify-content: center;
+
+      .usecase-tag {
+        border-color: $grace-orange !important;
+        color: $grace-orange !important;
+        font-weight: $font-weight-medium;
+        transition: $transition-normal;
+
+        &:hover {
+          background: $grace-orange !important;
+          color: white !important;
+        }
+      }
+    }
+  }
+
+  // 使い方セクション
+  .howto-section {
+    padding: $spacing-xxl 0;
+    background: $background-primary;
+
+    .section-title {
+      font-size: $font-size-xxl;
+      font-weight: $font-weight-bold;
+      color: $text-primary;
+      margin-bottom: $spacing-md;
+    }
+
+    .howto-subtitle {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-medium;
+      color: $text-primary;
+      margin-bottom: $spacing-xxl;
+    }
+
+    .howto-card {
+      height: 100%;
+      transition: $transition-normal;
+      border-radius: $border-radius-lg;
+      overflow: hidden;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: $shadow-lg;
+      }
+
+      .v-card-text {
+        padding: $spacing-xl;
+      }
+
+      .step-number {
+        width: 48px;
+        height: 48px;
+        background: $grace-orange;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+        margin: 0 auto $spacing-lg;
+      }
+
+      .howto-title {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+        color: $text-primary;
+        margin-bottom: $spacing-lg;
+        text-align: center;
+      }
+
+      .howto-image {
+        margin-bottom: $spacing-lg;
+
+        .v-icon {
+          color: $grace-orange !important;
+        }
+      }
+
+      .howto-description {
+        font-size: $font-size-md;
+        color: $text-secondary;
+        line-height: 1.6;
+        text-align: center;
+      }
+    }
+
+    .cta-button {
+      background: $grace-orange !important;
+      color: white !important;
+      font-weight: $font-weight-bold;
+      padding: $spacing-md $spacing-xxl;
+      border-radius: $border-radius-lg;
+      box-shadow: $shadow-md;
+      transition: $transition-normal;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-lg;
+      }
+    }
+  }
+
+  // パートナーアプリセクション
+  .partner-section {
+    padding: $spacing-xxl 0;
+    background: $background-secondary;
+
+    .partner-title {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-medium;
+      color: $text-secondary;
+      margin-bottom: $spacing-xl;
+    }
+
+    .partner-card {
+      border-radius: $border-radius-md;
+      background: $surface-primary;
+
+      .partner-logo {
+        margin-bottom: $spacing-md;
+      }
+
+      .partner-description {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        margin: 0;
+      }
+    }
+  }
+
+  // フッター
+  .footer {
+    background: #325361 !important;
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      .footer-link {
+        color: white;
+        text-decoration: none;
+        font-size: $font-size-sm;
+        transition: $transition-normal;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .copyright {
+      color: #D1D5DB;
+      font-size: $font-size-xs;
+      margin: 0;
+    }
+  }
+}
+
+// レスポンシブ対応
+@media (max-width: $breakpoint-md) {
+  .service-intro {
+    .hero-section {
+      .hero-title {
+        font-size: $font-size-xl;
+      }
+
+      .hero-subtitle {
+        font-size: $font-size-md;
+      }
+    }
+
+    .features-section,
+    .usecases-section,
+    .howto-section,
+    .partner-section {
+      padding: $spacing-xl 0;
+    }
+
+    .usecases-section {
+      .tags-container {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    .howto-section {
+      .howto-card {
+        margin-bottom: $spacing-lg;
+      }
+    }
+  }
+}

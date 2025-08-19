@@ -1,0 +1,74 @@
+// Grace ブランドカラー
+$grace-orange: #DC4409;
+$grace-cyan: #00BCD4;
+
+// テキストカラー
+$text-primary: #333333;
+$text-secondary: #666666;
+$text-tertiary: #999999;
+$text-disabled: #999999;
+
+// 背景カラー
+$background-primary: #ffffff;
+$background-secondary: #f5f5f5;
+$background-tertiary: #eeeeee;
+
+// 表面カラー
+$surface-primary: #ffffff;
+$surface-secondary: #fafafa;
+$surface-elevated: #ffffff;
+
+// 状態カラー
+$success: #4CAF50;
+$warning: #FF9800;
+$error: #F44336;
+$info: #2196F3;
+
+// スペーシング
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 48px;
+
+// ボーダー半径
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+
+// ボーダーカラー
+$border-color: #e0e0e0;
+
+// シャドウ
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+// ブレークポイント
+$breakpoint-sm: 600px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1264px;
+$breakpoint-xl: 1904px;
+
+// タイポグラフィ
+$font-family-primary: 'Roboto', sans-serif;
+$font-family-secondary: 'Noto Sans JP', sans-serif;
+
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-md: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-xxl: 24px;
+
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+// トランジション
+$transition-fast: 0.15s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;
