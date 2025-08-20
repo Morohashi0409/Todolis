@@ -1,6 +1,6 @@
 .group-creation {
   min-height: 100vh;
-  background: $background-primary;
+  background: $page-background; // ページ全体の背景色を変更
 
   // ヘッダー
   .header {

@@ -2,7 +2,7 @@
 
 .link-display {
   min-height: 100vh;
-  background: linear-gradient(135deg, $grace-orange, lighten($grace-orange, 20%));
+  background: $page-background; // ページ全体の背景色を変更
 
   .header {
     background: $grace-orange !important;
