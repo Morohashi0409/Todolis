@@ -6,7 +6,7 @@
         <v-row align="center">
           <v-col cols="12" md="6">
             <h1 class="space-title">{{ spaceName }}</h1>
-            <p class="space-description">{{ spaceDescription }}</p>
+            <p v-if="spaceDescription" class="space-description">{{ spaceDescription }}</p>
           </v-col>
           <v-col cols="12" md="6" class="text-right">
             <div class="progress-info">
@@ -34,8 +34,52 @@
     <!-- メインコンテンツ -->
     <v-main class="main-content">
       <v-container class="content-container">
-        <!-- フィルタ・ソート -->
-        <div class="filters-section">
+        <!-- ローディング状態 -->
+        <div v-if="loading" class="loading-section">
+          <v-row justify="center">
+            <v-col cols="12" class="text-center">
+              <v-progress-circular
+                indeterminate
+                color="primary"
+                size="64"
+              />
+              <p class="mt-4">データを読み込み中...</p>
+            </v-col>
+          </v-row>
+        </div>
+
+        <!-- エラー状態 -->
+        <div v-else-if="error" class="error-section">
+          <v-row justify="center">
+            <v-col cols="12" md="8" class="text-center">
+              <v-alert
+                type="error"
+                variant="tonal"
+                class="mb-4"
+              >
+                {{ error }}
+              </v-alert>
+              <v-btn
+                color="primary"
+                @click="fetchGoals"
+                class="mr-2"
+              >
+                再試行
+              </v-btn>
+              <v-btn
+                variant="outlined"
+                @click="fetchSpaceInfo"
+              >
+                スペース情報を再取得
+              </v-btn>
+            </v-col>
+          </v-row>
+        </div>
+
+        <!-- 通常のコンテンツ -->
+        <div v-else>
+          <!-- フィルタ・ソート -->
+          <div class="filters-section">
           <v-row align="center">
             <v-col cols="12" md="6">
               <div class="filter-controls">
@@ -186,6 +230,7 @@
             </v-card>
           </div>
         </div>
+        </div> <!-- 通常のコンテンツの終了 -->
       </v-container>
     </v-main>
 
@@ -283,230 +328,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import type { Goal, CreateGoalRequest } from '@/types'
+import { useGoalDisplay } from './index'
 
-const route = useRoute()
-
-// 状態管理
-const showAddGoalDialog = ref(false)
-const sortOrder = ref('createdAt')
-const filters = reactive({
-  assignee: '',
-  status: 'all'
-})
-
-// 新しい目標のフォーム
-const newGoal = reactive<CreateGoalRequest>({
-  title: '',
-  assignee: '',
-  dueDate: '',
-  description: ''
-})
-
-// バリデーションルール
-const rules = {
-  required: (value: string) => !!value || 'この項目は必須です'
-}
-
-// サンプルデータ（実際の実装ではAPIから取得）
-const spaceName = ref('引越し計画')
-const spaceDescription = ref('新しい家への引越し準備を進めましょう')
-const isEditor = ref(true)
-
-const goals = ref<Goal[]>([
-  {
-    id: '1',
-    title: '荷物の整理',
-    description: '不要なものを処分して、必要なものだけを残す',
-    assignee: 'ようへい',
-    dueDate: '2025-01-31',
-    isCompleted: false,
-    createdAt: '2025-01-15T10:00:00Z',
-    updatedAt: '2025-01-15T10:00:00Z',
-    comments: [],
-    reactions: [],
-    showDetails: false,
-    newComment: ''
-  },
-  {
-    id: '2',
-    title: '引越し業者の選定',
-    description: '複数の業者から見積もりを取る',
-    assignee: 'まいこ',
-    dueDate: '2025-01-25',
-    isCompleted: true,
-    createdAt: '2025-01-10T09:00:00Z',
-    updatedAt: '2025-01-12T15:30:00Z',
-    comments: [
-      {
-        id: '1',
-        content: '3社から見積もりを取りました',
-        author: 'まいこ',
-        createdAt: '2025-01-12T15:30:00Z'
-      }
-    ],
-    reactions: [
-      {
-        id: '1',
-        type: 'heart',
-        author: 'ようへい',
-        createdAt: '2025-01-12T16:00:00Z'
-      }
-    ],
-    showDetails: false,
-    newComment: ''
-  }
-])
-
-// 計算プロパティ
-const totalGoals = computed(() => goals.value.length)
-const completedGoals = computed(() => goals.value.filter(g => g.isCompleted).length)
-const progressPercentage = computed(() => {
-  if (totalGoals.value === 0) return 0
-  return Math.round((completedGoals.value / totalGoals.value) * 100)
-})
-
-const assigneeOptions = computed(() => {
-  const assignees = goals.value
-    .map(g => g.assignee)
-    .filter(Boolean) as string[]
-  return [...new Set(assignees)]
-})
-
-const statusOptions = [
-  { title: 'すべて', value: 'all' },
-  { title: '完了済み', value: 'completed' },
-  { title: '未完了', value: 'pending' }
-]
-
-const filteredGoals = computed(() => {
-  let filtered = goals.value
-
-  // 担当者で絞り込み
-  if (filters.assignee) {
-    filtered = filtered.filter(g => g.assignee === filters.assignee)
-  }
-
-  // 状態で絞り込み
-  if (filters.status === 'completed') {
-    filtered = filtered.filter(g => g.isCompleted)
-  } else if (filters.status === 'pending') {
-    filtered = filtered.filter(g => !g.isCompleted)
-  }
-
-  // ソート
-  filtered.sort((a, b) => {
-    switch (sortOrder.value) {
-      case 'dueDate':
-        if (!a.dueDate || !b.dueDate) return 0
-        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-      case 'title':
-        return a.title.localeCompare(b.title)
-      default:
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    }
-  })
-
-  return filtered
-})
-
-// メソッド
-const toggleGoalStatus = (goal: Goal) => {
-  goal.isCompleted = !goal.isCompleted
-  goal.updatedAt = new Date().toISOString()
+const {
+  // 状態
+  showAddGoalDialog,
+  sortOrder,
+  filters,
+  newGoal,
+  rules,
+  spaceName,
+  isEditor,
+  goals,
   
-  if (goal.isCompleted) {
-    // 完了時のアニメーション（実際の実装では小鳥アニメーション）
-    console.log(`${goal.title} が完了しました！`)
-  }
-}
-
-const showComments = (goal: Goal) => {
-  goal.showDetails = !goal.showDetails
-}
-
-const addComment = (goal: Goal) => {
-  if (!goal.newComment?.trim()) return
-
-  const comment = {
-    id: Date.now().toString(),
-    content: goal.newComment.trim(),
-    author: 'あなた',
-    createdAt: new Date().toISOString()
-  }
-
-  goal.comments.push(comment)
-  goal.newComment = ''
-}
-
-const toggleReaction = (goal: Goal, type: 'like' | 'heart' | 'clap') => {
-  const existingReaction = goal.reactions.find(r => r.author === 'あなた' && r.type === type)
+  // 計算プロパティ
+  totalGoals,
+  completedGoals,
+  progressPercentage,
+  assigneeOptions,
+  statusOptions,
+  filteredGoals,
   
-  if (existingReaction) {
-    goal.reactions = goal.reactions.filter(r => r.id !== existingReaction.id)
-  } else {
-    const reaction = {
-      id: Date.now().toString(),
-      type,
-      author: 'あなた',
-      createdAt: new Date().toISOString()
-    }
-    goal.reactions.push(reaction)
-  }
-}
-
-const hasReaction = (goal: Goal, type: 'like' | 'heart' | 'clap') => {
-  return goal.reactions.some(r => r.author === 'あなた' && r.type === type)
-}
-
-const addGoal = () => {
-  if (!newGoal.title.trim()) return
-
-  const goal: Goal = {
-    id: Date.now().toString(),
-    title: newGoal.title.trim(),
-    description: newGoal.description?.trim() || '',
-    assignee: newGoal.assignee?.trim() || '',
-    dueDate: newGoal.dueDate || '',
-    isCompleted: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    comments: [],
-    reactions: [],
-    showDetails: false,
-    newComment: ''
-  }
-
-  goals.value.unshift(goal)
-  
-  // フォームをリセット
-  newGoal.title = ''
-  newGoal.assignee = ''
-  newGoal.dueDate = ''
-  newGoal.description = ''
-  
-  showAddGoalDialog.value = false
-}
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('ja-JP')
-}
-
-const formatTime = (dateString: string) => {
-  return new Date(dateString).toLocaleString('ja-JP', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-onMounted(() => {
-  // 初期化処理（実際の実装ではAPIからデータ取得）
-  console.log('目標表示ページが読み込まれました')
-})
+  // メソッド
+  toggleGoalStatus,
+  showComments,
+  addComment,
+  toggleReaction,
+  hasReaction,
+  addGoal,
+  formatDate,
+  formatTime
+} = useGoalDisplay()
 </script>
 
 <style src="./goal-display.scss" lang="scss" scoped></style>

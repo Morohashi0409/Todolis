@@ -60,6 +60,9 @@ export interface Goal {
   updatedAt: string
   comments: Comment[]
   reactions: Reaction[]
+  // UI状態管理用のプロパティ
+  showDetails?: boolean
+  newComment?: string
 }
 
 // コメントの型定義
