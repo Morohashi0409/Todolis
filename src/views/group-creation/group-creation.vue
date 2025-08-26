@@ -57,7 +57,7 @@
 
               <!-- 追加されたメンバー一覧 -->
               <div v-if="memberList.length > 0" class="member-list-container">
-                <label class="field-label">追加されたメンバー</label>
+                <label class="field-label">メンバー一覧</label>
                 <div class="member-list">
                   <div 
                     v-for="(member, index) in memberList" 

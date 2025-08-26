@@ -150,6 +150,8 @@
 
     .form-actions {
       margin-top: $spacing-xxl;
+      display: flex;
+      justify-content: center;
       text-align: center;
 
       .submit-button {

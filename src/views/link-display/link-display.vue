@@ -37,12 +37,7 @@
                 </v-card-title>
                 <v-card-text>
                   <div class="url-display">
-                    <v-text-field
-                      :value="editorUrl"
-                      readonly
-                      variant="outlined"
-                      class="url-input"
-                    />
+                    <div class="url-text">{{ editorUrl }}</div>
                     <v-btn
                       color="primary"
                       variant="flat"
@@ -60,7 +55,7 @@
                       @click="shareToLine(editorUrl)"
                       class="share-button"
                     >
-                      <v-icon class="mr-2">mdi-line</v-icon>
+                      <img src="./line.svg" alt="LINE" class="mr-2 line-icon" />
                       LINEで送る
                     </v-btn>
                     <v-btn
@@ -90,24 +85,19 @@
 
               <!-- 閲覧用リンク -->
               <v-card class="link-card" elevation="2">
-                <v-card-title class="link-title">
+                <v-card-title class="link-title viewer-title">
                   <v-icon color="info" class="mr-2">mdi-eye</v-icon>
                   閲覧用リンク
                 </v-card-title>
                 <v-card-text>
                   <div class="url-display">
-                    <v-text-field
-                      :value="viewerUrl"
-                      readonly
-                      variant="outlined"
-                      class="url-input"
-                    />
+                    <div class="url-text">{{ viewerUrl }}</div>
                     <v-btn
                       color="primary"
                       variant="flat"
                       @click="copyToClipboard(viewerUrl, 'viewer')"
                       :loading="copying.viewer"
-                      class="copy-button"
+                      class="copy-button viewer-copy"
                     >
                       {{ copying.viewer ? 'コピー中...' : 'コピー' }}
                     </v-btn>
@@ -119,7 +109,7 @@
                       @click="shareToLine(viewerUrl)"
                       class="share-button"
                     >
-                      <v-icon class="mr-2">mdi-line</v-icon>
+                      <img src="./line.svg" alt="LINE" class="mr-2 line-icon" />
                       LINEで送る
                     </v-btn>
                     <v-btn

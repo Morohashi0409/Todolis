@@ -22,6 +22,8 @@
     
     .content-container {
       padding: $spacing-xl 0;
+      max-width: 800px;
+      margin: 0 auto;
       
       .completion-message {
         text-align: center;
@@ -61,9 +63,17 @@
             color: white;
             font-weight: $font-weight-bold;
             padding: $spacing-md;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             
             .v-icon {
               color: white !important;
+            }
+            
+            // 閲覧用リンクの場合の色調整
+            &.viewer-title {
+              background: #E55A23 !important;
             }
           }
           
@@ -72,33 +82,80 @@
             
             .url-display {
               display: flex;
-              gap: $spacing-md;
+              gap: 0;
               margin-bottom: $spacing-md;
-              align-items: flex-start;
+              align-items: stretch;
               
-              .url-input {
+              .url-text {
                 flex: 1;
-                
-                .v-field__input {
-                  background: rgba(0, 0, 0, 0.05);
-                  border-radius: $border-radius-sm;
-                }
+                background: white;
+                border: 1px solid #E0E0E0;
+                border-right: none;
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+                border-radius: 8px 0 0 8px;
+                padding: 12px 16px;
+                font-family: 'Courier New', monospace;
+                font-size: 14px;
+                color: #4A4A4A;
+                word-break: break-all;
+                height: 48px;
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                line-height: 1.4;
+                box-sizing: border-box;
               }
               
               .copy-button {
                 white-space: nowrap;
                 min-width: 80px;
+                flex-shrink: 0;
+                border-radius: 0 8px 8px 0;
+                border: 1px solid #DC4409;
+                background: #DC4409 !important;
+                color: white !important;
+                height: 48px;
+                min-height: 48px;
+                font-weight: 500;
+                text-transform: none;
+                box-shadow: none;
+                box-sizing: border-box;
+                
+                &:hover {
+                  background: #DC4409 !important;
+                  border-color: #DC4409;
+                }
+                
+                // 閲覧用リンクの場合の色調整
+                &.viewer-copy {
+                  background: #E55A23 !important;
+                  border-color: #E55A23;
+                  
+                  &:hover {
+                    background: #D14A13 !important;
+                    border-color: #D14A13;
+                  }
+                }
               }
             }
             
             .share-buttons {
               display: flex;
-              gap: $spacing-sm;
+              gap: $spacing-md;
               flex-wrap: wrap;
+              justify-content: center;
               
               .share-button {
                 flex: 1;
-                min-width: 120px;
+                min-width: 140px;
+                max-width: 200px;
+                
+                .line-icon {
+                  width: 20px;
+                  height: 20px;
+                  vertical-align: middle;
+                }
               }
             }
           }
@@ -107,22 +164,28 @@
       
       .security-section {
         text-align: center;
-        margin-bottom: $spacing-xl;
+        margin: $spacing-xl 0;
         
         .pin-button {
           font-weight: $font-weight-medium;
-          padding: $spacing-md $spacing-lg;
+          padding: $spacing-md $spacing-xl;
+          min-width: 200px;
         }
       }
       
       .next-steps {
         text-align: center;
+        display: flex;
+        justify-content: center;
         margin: $spacing-xl 0;
         
         .next-button {
+          display: flex;
+          justify-content: center;
           font-size: 1.1rem;
           font-weight: $font-weight-bold;
           padding: $spacing-md $spacing-xl;
+          min-width: 200px;
         }
       }
     }
@@ -168,9 +231,23 @@
             .v-card-text {
               .url-display {
                 flex-direction: column;
+                gap: 0;
+                
+                .url-text {
+                  border-right: 1px solid #E0E0E0;
+                  border-radius: 8px 8px 0 0;
+                  border-bottom: none;
+                }
                 
                 .copy-button {
                   width: 100%;
+                  border-radius: 0 0 8px 8px;
+                  border: 1px solid #DC4409;
+                  border-top: none;
+                  
+                  &.viewer-copy {
+                    border-color: #E55A23;
+                  }
                 }
               }
               
