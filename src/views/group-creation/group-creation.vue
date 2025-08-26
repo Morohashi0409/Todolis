@@ -24,7 +24,7 @@
               <div class="form-field">
                 <label class="field-label">グループ名</label>
                 <v-text-field
-                  v-model="formData.name"
+                  v-model="formData.title"
                   placeholder="計画2025"
                   variant="outlined"
                   class="input-field"

@@ -1,3 +1,14 @@
+// 注意: このファイルは既存のアプリケーション用の型定義です
+// 新しいAPI接続機能については、src/api/types.ts を参照してください
+// 
+// API実装一覧に基づいた完全な型定義とAPI接続機能は以下で提供されています：
+// - src/api/types.ts: 完全な型定義
+// - src/api/client.ts: HTTPクライアント
+// - src/api/spaces.ts: スペース関連API
+// - src/api/goals.ts: 目標関連API
+// - src/api/comments.ts: コメント関連API
+// - src/api/reactions.ts: リアクション関連API
+
 // API レスポンスの型定義
 export interface ApiResponse<T = any> {
   success: boolean
