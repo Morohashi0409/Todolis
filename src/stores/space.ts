@@ -29,8 +29,21 @@ export const useSpaceStore = defineStore('space', () => {
   }
 
   const setTokens = (tokens: { viewer?: string; editor?: string }) => {
-    if (tokens.viewer) viewerToken.value = tokens.viewer
-    if (tokens.editor) editorToken.value = tokens.editor
+    console.log('setTokens called with:', tokens)
+    
+    if (tokens.viewer) {
+      console.log('Setting viewer token:', tokens.viewer)
+      viewerToken.value = tokens.viewer
+    }
+    if (tokens.editor) {
+      console.log('Setting editor token:', tokens.editor)
+      editorToken.value = tokens.editor
+    }
+    
+    console.log('Tokens after setting:', {
+      viewerToken: viewerToken.value,
+      editorToken: editorToken.value
+    })
   }
 
   const clearTokens = () => {

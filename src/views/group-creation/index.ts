@@ -65,15 +65,29 @@ export const useGroupCreation = () => {
         title: formData.title,
         members: members
       })
-
-      // ストアにトークンを保存
+      // ストアにトークンとスペース情報を保存
       spaceStore.setTokens({
         viewer: response.view_token,
         editor: response.edit_token
       })
+      
+      // デバッグ用：ストアの状態をログ出力
+      console.log('Store after setTokens:', {
+        viewerToken: spaceStore.viewerToken,
+        editorToken: spaceStore.editorToken
+      })
+      
+      // スペース情報も保存
+      spaceStore.setCurrentSpace({
+        id: response.space_id,
+        name: formData.title,
+        members: members,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
 
-      // リンク表示ページに遷移
-      router.push('/links')
+      // リンク表示ページに遷移（スペースIDをクエリパラメータとして渡す）
+      router.push(`/links?spaceId=${response.space_id}`)
 
     } catch (error) {
       console.error('グループ作成エラー:', error)

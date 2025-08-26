@@ -38,13 +38,13 @@
         .completion-title {
           font-size: 2rem;
           font-weight: $font-weight-bold;
-          color: white;
+          color: #19202B;
           margin-bottom: $spacing-sm;
         }
         
         .completion-subtitle {
           font-size: 1.1rem;
-          color: rgba(255, 255, 255, 0.9);
+          color: #19202B;
           margin: 0;
         }
       }
@@ -117,6 +117,7 @@
       
       .next-steps {
         text-align: center;
+        margin: $spacing-xl 0;
         
         .next-button {
           font-size: 1.1rem;
@@ -129,6 +130,7 @@
   
   .footer {
     margin-top: auto;
+    background: #325361 !important;
     
     .footer-links {
       display: flex;
