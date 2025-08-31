@@ -22,16 +22,21 @@ export const useLinkDisplay = () => {
     }
   }
 
-  // スペースIDとトークンからURLを生成
-  const editorUrl = computed(() => {
-    const token = spaceStore.editorToken || 'mock-editor-token'
+  const url = computed(() => {
+    const token = spaceStore.currentSpace?.id || 'mock-space-id'
     return `${window.location.origin}/space/${token}`
   })
 
-  const viewerUrl = computed(() => {
-    const token = spaceStore.viewerToken || 'mock-viewer-token'
-    return `${window.location.origin}/space/${token}`
-  })
+  // スペースIDとトークンからURLを生成
+  // const editorUrl = computed(() => {
+  //   const token = spaceStore.editorToken || 'mock-editor-token'
+  //   return `${window.location.origin}/space/${token}`
+  // })
+
+  // const viewerUrl = computed(() => {
+  //   const token = spaceStore.viewerToken || 'mock-viewer-token'
+  //   return `${window.location.origin}/space/${token}`
+  // })
 
   const copyToClipboard = async (text: string, type: 'editor' | 'viewer') => {
     try {
@@ -83,8 +88,9 @@ export const useLinkDisplay = () => {
     pinCode,
     copying,
     rules,
-    editorUrl,
-    viewerUrl,
+    url,
+    // editorUrl,
+    // viewerUrl,
     copyToClipboard,
     shareToLine,
     shareToOther,

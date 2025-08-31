@@ -16,8 +16,21 @@
         <v-container class="header-container" fluid>
           <v-row align="center">
             <v-col cols="12">
-              <h1 class="space-title">{{ spaceName || 'スペース名' }}</h1>
-              <p v-if="spaceDescription" class="space-description">{{ spaceDescription }}</p>
+              <div class="d-flex justify-space-between align-center">
+                <div>
+                  <h1 class="space-title">{{ spaceName || 'スペース名' }}</h1>
+                  <p v-if="spaceDescription" class="space-description">{{ spaceDescription }}</p>
+                </div>
+                <v-btn
+                  icon="mdi-cog"
+                  variant="text"
+                  color="white"
+                  @click="startEditingSpace"
+                  class="settings-button"
+                >
+                  <v-icon>mdi-cog</v-icon>
+                </v-btn>
+              </div>
             </v-col>
             <!-- 進捗情報を一時的にコメントアウト -->
             <!--
@@ -242,24 +255,22 @@
                     </div>
                   </div>
                   <div class="goal-actions mt-3">
-                    <div class="d-flex flex-column flex-sm-row justify-end gap-2">
+                    <div class="d-flex justify-center align-center">
                       <v-btn
                         variant="outlined"
                         size="small"
+                        icon="mdi-close"
                         @click="cancelAddingGoal"
-                        class="cancel-button order-sm-1"
-                      >
-                        キャンセル
-                      </v-btn>
+                        class="cancel-button"
+                      />
                       <v-btn
                         color="primary"
                         size="small"
+                        icon="mdi-check"
                         @click="addGoal"
                         :disabled="!newGoal.title.trim() || !newGoal.assignee?.trim() || !newGoal.dueDate"
-                        class="save-button order-sm-2"
-                      >
-                        保存
-                      </v-btn>
+                        class="save-button"
+                      />
                     </div>
                   </div>
                 </div>
@@ -314,8 +325,8 @@
                         {{ goal.assignee }}
                       </span>
                       <span v-if="goal.dueDate" class="goal-due-date">
-                        <v-icon size="16" class="mr-1">mdi-calendar</v-icon>
                         {{ formatDate(goal.dueDate) }}
+                        <v-icon size="16" class="ml-1">mdi-calendar</v-icon>
                       </span>
                     </div>
                     <p v-if="goal.description" class="goal-description">
@@ -369,7 +380,99 @@
       </v-container>
     </v-main>
 
+    <!-- スペース編集ダイアログ -->
+    <v-dialog v-model="isEditingSpace" max-width="600">
+      <v-card>
+        <v-card-title class="text-h6">
+          <v-icon class="mr-2">mdi-cog</v-icon>
+          スペース設定の編集
+        </v-card-title>
+        
+        <v-card-text>
+          <v-form @submit.prevent="saveSpaceEdit" class="space-edit-form">
+            <div class="form-field">
+              <label class="field-label">スペース名</label>
+              <v-text-field
+                v-model="editSpaceData.title"
+                placeholder="スペース名を入力..."
+                variant="outlined"
+                class="input-field"
+                :rules="[rules.required]"
+              />
+            </div>
 
+            <div class="form-field">
+              <label class="field-label">メンバー名</label>
+              <div class="member-input-container">
+                <v-text-field
+                  v-model="currentEditMemberInput"
+                  placeholder="メンバー名を入力..."
+                  variant="outlined"
+                  class="input-field member-input"
+                  @keyup.enter="addEditMember"
+                />
+                <v-btn
+                  color="primary"
+                  variant="flat"
+                  class="add-button"
+                  @click="addEditMember"
+                  :disabled="!currentEditMemberInput.trim()"
+                >
+                  追加
+                </v-btn>
+              </div>
+              <div class="help-text">
+                メンバー名を入力して「追加」ボタンを押してください
+              </div>
+            </div>
+
+            <!-- 追加されたメンバー一覧 -->
+            <div v-if="editSpaceMemberList.length > 0" class="member-list-container">
+              <label class="field-label">メンバー一覧</label>
+              <div class="member-list">
+                <div 
+                  v-for="(member, index) in editSpaceMemberList" 
+                  :key="index"
+                  class="member-item"
+                >
+                  <span class="member-number">メンバー{{ index + 1 }}：</span>
+                  <span class="member-name">{{ member }}</span>
+                  <v-btn
+                    icon="mdi-close"
+                    size="small"
+                    variant="text"
+                    color="error"
+                    @click="removeEditMember(index)"
+                    class="remove-button"
+                  >
+                    <v-icon>mdi-close</v-icon>
+                  </v-btn>
+                </div>
+              </div>
+            </div>
+          </v-form>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            variant="outlined"
+            icon="mdi-close"
+            @click="cancelEditingSpace"
+            :disabled="loading"
+            class="cancel-button"
+          />
+          <v-btn
+            color="primary"
+            icon="mdi-check"
+            @click="saveSpaceEdit"
+            :loading="loading"
+            :disabled="!editSpaceData.title?.trim() || editSpaceMemberList.length === 0"
+            class="save-button"
+          />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- フッター -->
     <v-footer class="footer" color="dark">
@@ -408,13 +511,20 @@ import { useGoalDisplay } from './index'
 const {
   // 状態
   isAddingGoal,
+  isEditingSpace,
   sortOrder,
   filters,
   newGoal,
+  rules,
   spaceName,
   spaceDescription,
   loading,
   error,
+  
+  // スペース編集関連の状態
+  editSpaceData,
+  editSpaceMemberList,
+  currentEditMemberInput,
   
   // 計算プロパティ
   assigneeOptions,
@@ -427,6 +537,13 @@ const {
   formatDate,
   startAddingGoal,
   cancelAddingGoal,
+  
+  // スペース編集メソッド
+  startEditingSpace,
+  cancelEditingSpace,
+  addEditMember,
+  removeEditMember,
+  saveSpaceEdit,
   
   // 再取得メソッド
   fetchGoals,

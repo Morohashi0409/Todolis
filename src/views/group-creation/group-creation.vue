@@ -120,20 +120,20 @@
       <v-container>
         <v-row>
           <v-col cols="12" md="6">
-            <div class="footer-links">
+            <!-- <div class="footer-links">
               <a href="#" class="footer-link">よくある質問</a>
               <a href="#" class="footer-link">お問い合わせ</a>
               <a href="#" class="footer-link">広告掲載について</a>
               <a href="#" class="footer-link">アンケート</a>
-            </div>
+            </div> -->
           </v-col>
           <v-col cols="12" md="6">
-            <div class="footer-links">
+            <!-- <div class="footer-links">
               <a href="#" class="footer-link">プライバシーポリシー</a>
               <a href="#" class="footer-link">利用規約</a>
               <a href="#" class="footer-link">運営元情報</a>
               <a href="#" class="footer-link">関連サイト</a>
-            </div>
+            </div> -->
           </v-col>
         </v-row>
         <v-row>

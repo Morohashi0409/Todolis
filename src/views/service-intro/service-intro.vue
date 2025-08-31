@@ -53,12 +53,12 @@
             <div class="feature-card">
               <div class="feature-image">
                 <v-icon size="120" color="primary" class="feature-icon">
-                  mdi-calculator
+                  mdi-format-list-checks
                 </v-icon>
               </div>
-              <h3 class="feature-title">もっとも簡単な割り勘清算方法を計算</h3>
+              <h3 class="feature-title">目標達成を仲間と一緒に管理</h3>
               <p class="feature-description">
-                グループページにお金の立替え記録を登録していけば、独自のアルゴリズムで、リアルタイムに最も簡単な清算方法を計算してくれます。
+                グループページに目標や「やることリスト」を登録していけば、みんなの進み具合がリアルタイムにひと目でわかります。「あの作業、終わったっけ？」がなくなります。
               </p>
             </div>
           </v-col>
@@ -71,7 +71,7 @@
               </div>
               <h3 class="feature-title">会員登録不要でかんたん利用</h3>
               <p class="feature-description">
-                アプリインストール不要で、お使いのブラウザから会員登録なしですぐに利用できます。一緒に旅行に行く友達にアプリをインストールしてもらう必要はありません。
+                アプリインストール不要で、お使いのブラウザから会員登録なしですぐに利用できます。一緒に目標を達成する仲間にアプリをインストールしてもらう必要はありません。
               </p>
             </div>
           </v-col>
@@ -82,12 +82,12 @@
             <div class="feature-card">
               <div class="feature-image">
                 <v-icon size="120" color="primary" class="feature-icon">
-                  mdi-currency-usd
+                  mdi-heart-multiple
                 </v-icon>
               </div>
-              <h3 class="feature-title">あらゆる国の外貨に対応</h3>
+              <h3 class="feature-title">応援機能で継続をサポート</h3>
               <p class="feature-description">
-                すべての外貨に対応しているため、海外旅行中に発生したお金の貸し借りもスムーズに日本円で清算できます。
+                仲間の頑張りにスタンプやコメントで「がんばれ！」を送れます。応援があるから、ひとりでは続かないことも、みんなとなら楽しく継続できます。
               </p>
             </div>
           </v-col>
@@ -98,7 +98,7 @@
     <!-- ユースケースセクション -->
     <section class="usecases-section">
       <v-container>
-        <h2 class="section-title text-center">旅行以外にも様々なシーンで活躍</h2>
+        <h2 class="section-title text-center">様々なシーンで目標達成をサポート</h2>
         <v-row justify="center">
           <v-col cols="12" md="10">
             <div class="tags-container">
@@ -131,10 +131,10 @@
                 <div class="step-number">1</div>
                 <h3 class="howto-title">グループを作成する</h3>
                 <div class="howto-image">
-                  <v-icon size="80" color="primary">mdi-account-group</v-icon>
+                  <v-icon size="80" color="primary">mdi-folder-plus</v-icon>
                 </div>
                 <p class="howto-description">
-                  まずはグループページを作成します。イベントのタイトルとメンバーを入力しましょう。海外旅行に行く際は、グループで使用する外貨も選択できます。
+                  まずは目標グループページを作成します。プロジェクトのタイトルとメンバーを入力しましょう。秘密の計画には、PINコードも設定できます。
                 </p>
               </v-card-text>
             </v-card>
@@ -148,7 +148,7 @@
                   <v-icon size="80" color="primary">mdi-share-variant</v-icon>
                 </div>
                 <p class="howto-description">
-                  グループページのURLをLINEなどでメンバーにシェアしましょう。グループページにはURLを知っている人のみがアクセスできます。
+                  グループページのURLをLINEなどでメンバーにシェアしましょう。「見るだけ用」と「編集可能用」の2種類のリンクで安心です。
                 </p>
               </v-card-text>
             </v-card>
@@ -160,12 +160,12 @@
             <v-card class="howto-card" elevation="2">
               <v-card-text class="text-center">
                 <div class="step-number">3</div>
-                <h3 class="howto-title">立替えを記録する</h3>
+                <h3 class="howto-title">目標・タスクを記録する</h3>
                 <div class="howto-image">
-                  <v-icon size="80" color="primary">mdi-currency-exchange</v-icon>
+                  <v-icon size="80" color="primary">mdi-clipboard-check</v-icon>
                 </div>
                 <p class="howto-description">
-                  誰が誰に何の買い物で何円立替えたかを登録しましょう。メンバー全員が登録可能なので、幹事の負担を軽減できます。
+                  みんなの「やることリスト」を登録しましょう。誰がどの作業を担当するかも設定できるので、役割分担もスムーズです。
                 </p>
               </v-card-text>
             </v-card>
@@ -174,12 +174,12 @@
             <v-card class="howto-card" elevation="2">
               <v-card-text class="text-center">
                 <div class="step-number">4</div>
-                <h3 class="howto-title">清算方法を確認する</h3>
+                <h3 class="howto-title">進捗を確認・応援する</h3>
                 <div class="howto-image">
-                  <v-icon size="80" color="primary">mdi-check-circle</v-icon>
+                  <v-icon size="80" color="primary">mdi-progress-check</v-icon>
                 </div>
                 <p class="howto-description">
-                  清算方法は「誰から誰に」「いくら」返済が必要か確認できます。清算はもっとも少ない回数で済むよう計算されています。
+                  完了したタスクはチェックして進捗を共有。仲間の頑張りにはスタンプやコメントで「おつかれさま！」を送りましょう。
                 </p>
               </v-card-text>
             </v-card>
@@ -201,43 +201,24 @@
       </v-container>
     </section>
 
-    <!-- パートナーアプリセクション -->
-    <section class="partner-section">
-      <v-container>
-        <h3 class="partner-title text-center">パートナーアプリ</h3>
-        <v-row justify="center">
-          <v-col cols="12" md="8">
-            <v-card class="partner-card" elevation="1" outlined>
-              <v-card-text class="text-center">
-                <div class="partner-logo">
-                  <v-icon size="64" color="grey">mdi-account-group</v-icon>
-                </div>
-                <p class="partner-description">共同編集できる旅行計画アプリ</p>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </section>
-
     <!-- フッター -->
     <v-footer class="footer" color="dark">
       <v-container>
         <v-row>
           <v-col cols="12" md="6">
             <div class="footer-links">
-              <a href="#" class="footer-link">よくある質問</a>
+              <!-- <a href="#" class="footer-link">よくある質問</a>
               <a href="#" class="footer-link">お問い合わせ</a>
               <a href="#" class="footer-link">広告掲載について</a>
-              <a href="#" class="footer-link">アンケート</a>
+              <a href="#" class="footer-link">アンケート</a> -->
             </div>
           </v-col>
           <v-col cols="12" md="6">
             <div class="footer-links">
-              <a href="#" class="footer-link">プライバシーポリシー</a>
+              <!-- <a href="#" class="footer-link">プライバシーポリシー</a>
               <a href="#" class="footer-link">利用規約</a>
               <a href="#" class="footer-link">運営元情報</a>
-              <a href="#" class="footer-link">関連サイト</a>
+              <a href="#" class="footer-link">関連サイト</a> -->
             </div>
           </v-col>
         </v-row>
@@ -257,13 +238,13 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const usecaseTags = [
-  'ホームパーティ',
-  'サウナ',
-  'ハウスシェア',
-  'BBQ',
-  'ディズニーランド',
-  '夏フェス',
-  'キャンプ'
+  '文化祭準備',
+  '夏休みの宿題',
+  '旅行計画',
+  'テスト勉強',
+  'グループ学習',
+  '家族のお手伝い',
+  'プロジェクト管理'
 ]
 
 const navigateToCreate = () => {

@@ -1,7 +1,8 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Goal, CreateGoalRequest } from '@/types'
-import { getSpaceInfo } from '@/api/spaces'
+import { getSpaceInfo, updateSpace } from '@/api/spaces'
+import type { UpdateSpaceRequest } from '@/api/types'
 import { getGoalList, createGoal, updateGoalStatus } from '@/api/goals'
 
 export const useGoalDisplay = () => {
@@ -9,6 +10,7 @@ export const useGoalDisplay = () => {
 
   // 状態管理
   const isAddingGoal = ref(false)
+  const isEditingSpace = ref(false)
   const sortOrder = ref('createdAt')
   const filters = reactive({
     assignee: '',
@@ -26,6 +28,14 @@ export const useGoalDisplay = () => {
     dueDate: '',
     description: ''
   })
+
+  // スペース編集フォーム
+  const editSpaceData = reactive<UpdateSpaceRequest>({
+    title: '',
+    members_to_add: []
+  })
+  const editSpaceMemberList = ref<string[]>([])
+  const currentEditMemberInput = ref('')
 
   // バリデーションルール
   const rules = {
@@ -247,7 +257,21 @@ export const useGoalDisplay = () => {
         const newStatus: 'todo' | 'done' = goal.isCompleted ? 'done' : 'todo'
         console.log(`Calling API with goal ID: ${goal.id}, status: ${newStatus}`)
         
-        const result = await updateGoalStatus(goal.id, newStatus)
+        // goalオブジェクトをAPI用の形式に変換
+        const apiGoal = {
+          id: goal.id,
+          space_id: spaceId.value,
+          title: goal.title,
+          detail: goal.description || '',
+          assignee: goal.assignee || '',
+          due_on: goal.dueDate || '',
+          status: goal.isCompleted ? 'done' as const : 'todo' as const,
+          order_index: 0,
+          created_at: goal.createdAt,
+          updated_at: goal.updatedAt
+        }
+        
+        const result = await updateGoalStatus(goal.id, newStatus, apiGoal)
         
         console.log(`${goal.title} のAPIステータス更新が成功しました:`, result.message)
         
@@ -462,6 +486,84 @@ export const useGoalDisplay = () => {
     clearNewGoal()
   }
 
+  // スペース編集関連のメソッド
+  const startEditingSpace = () => {
+    // 現在のスペース情報をフォームに設定
+    editSpaceData.title = spaceName.value
+    editSpaceMemberList.value = [...members.value]
+    editSpaceData.members = [...members.value]
+    currentEditMemberInput.value = ''
+    isEditingSpace.value = true
+  }
+
+  const cancelEditingSpace = () => {
+    isEditingSpace.value = false
+    editSpaceData.title = ''
+    editSpaceData.members = []
+    editSpaceMemberList.value = []
+    currentEditMemberInput.value = ''
+  }
+
+  const addEditMember = () => {
+    if (currentEditMemberInput.value.trim()) {
+      editSpaceMemberList.value.push(currentEditMemberInput.value.trim())
+      editSpaceData.members = [...editSpaceMemberList.value]
+      currentEditMemberInput.value = ''
+    }
+  }
+
+  const removeEditMember = (index: number) => {
+    editSpaceMemberList.value.splice(index, 1)
+    editSpaceData.members = [...editSpaceMemberList.value]
+  }
+
+  const saveSpaceEdit = async () => {
+    try {
+      if (!editSpaceData.title || !editSpaceData.title.trim()) {
+        error.value = 'スペース名を入力してください'
+        return
+      }
+
+      if (editSpaceMemberList.value.length === 0) {
+        error.value = 'メンバーを1人以上追加してください'
+        return
+      }
+
+      loading.value = true
+      error.value = null
+
+      // API呼び出し
+      // 既存メンバーと新規メンバーを比較して、新規メンバーのみを抽出
+      const currentMembers = members.value || []
+      const newMembersOnly = editSpaceMemberList.value.filter(member => 
+        !currentMembers.includes(member)
+      )
+
+      console.log('現在のメンバー:', currentMembers)
+      console.log('編集フォームのメンバー:', editSpaceMemberList.value)
+      console.log('新規メンバーのみ:', newMembersOnly)
+
+      const updateData: UpdateSpaceRequest = {
+        title: editSpaceData.title.trim(),
+        members_to_add: newMembersOnly
+      }
+
+      await updateSpace(spaceId.value, updateData)
+      
+      // 成功後、スペース情報を再取得
+      await fetchSpaceInfo()
+      
+      // フォームを閉じる
+      cancelEditingSpace()
+      
+    } catch (err) {
+      console.error('スペース更新に失敗:', err)
+      error.value = 'スペースの更新に失敗しました'
+    } finally {
+      loading.value = false
+    }
+  }
+
   // 初期化処理
   const initialize = async () => {
     try {
@@ -491,6 +593,7 @@ export const useGoalDisplay = () => {
   return {
     // 状態
     isAddingGoal,
+    isEditingSpace,
     sortOrder,
     filters,
     newGoal,
@@ -501,6 +604,11 @@ export const useGoalDisplay = () => {
     goals,
     loading,
     error,
+    
+    // スペース編集関連の状態
+    editSpaceData,
+    editSpaceMemberList,
+    currentEditMemberInput,
     
     // 計算プロパティ
     totalGoals,
@@ -522,6 +630,13 @@ export const useGoalDisplay = () => {
     formatTime,
     startAddingGoal,
     cancelAddingGoal,
+    
+    // スペース編集メソッド
+    startEditingSpace,
+    cancelEditingSpace,
+    addEditMember,
+    removeEditMember,
+    saveSpaceEdit,
     
     // 再取得メソッド
     fetchGoals,

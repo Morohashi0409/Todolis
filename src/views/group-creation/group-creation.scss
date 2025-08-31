@@ -1,6 +1,8 @@
 .group-creation {
   min-height: 100vh;
   background: $page-background; // ページ全体の背景色を変更
+  display: flex;
+  flex-direction: column;
 
   // ヘッダー
   .header {
@@ -19,6 +21,7 @@
   // メインコンテンツ
   .main-content {
     padding-top: $spacing-lg;
+    flex: 1; // メインコンテンツが残りのスペースを占有
   }
 
   .form-container {
@@ -180,6 +183,7 @@
   // フッター
   .footer {
     background: #325361 !important;
+    margin-top: auto; // フッターを下に押し付ける
 
     .footer-links {
       display: flex;

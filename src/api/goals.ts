@@ -89,15 +89,24 @@ export async function deleteGoal(goalId: string, editToken: string): Promise<voi
 
 /**
  * 目標のステータス変更（FastAPI対応）
- * PUT /api/goals/{goal_id}
+ * PUT /api/goals/{goal_id}/update
  */
 export async function updateGoalStatus(
   goalId: string,
-  status: 'todo' | 'done'
+  status: 'todo' | 'done',
+  currentGoal: Goal
 ): Promise<{ goal: Goal; message: string }> {
   try {
+    const queryParams = buildQueryParams({
+      status,
+      title: currentGoal.title,
+      detail: currentGoal.detail || '',
+      assignee: currentGoal.assignee || '',
+      due_on: currentGoal.due_on || ''
+    })
+    
     const response = await apiClient.put<{ goal: Goal; message: string }>(
-      `/api/goals/${goalId}?status=${status}`
+      `/api/goals/${goalId}/update${queryParams}`
     )
     return validateResponse(response)
   } catch (error) {
@@ -159,9 +168,10 @@ export async function updateGoalTitle(
  * PUT /api/goals/{goal_id} の特殊ケース
  */
 export async function completeGoal(
-  goalId: string
+  goalId: string,
+  currentGoal: Goal
 ): Promise<{ goal: Goal; message: string }> {
-  return updateGoalStatus(goalId, 'done')
+  return updateGoalStatus(goalId, 'done', currentGoal)
 }
 
 /**
@@ -169,7 +179,8 @@ export async function completeGoal(
  * PUT /api/goals/{goal_id} の特殊ケース
  */
 export async function uncompleteGoal(
-  goalId: string
+  goalId: string,
+  currentGoal: Goal
 ): Promise<{ goal: Goal; message: string }> {
-  return updateGoalStatus(goalId, 'todo')
+  return updateGoalStatus(goalId, 'todo', currentGoal)
 }

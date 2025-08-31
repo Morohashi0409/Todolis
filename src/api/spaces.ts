@@ -112,16 +112,14 @@ export async function getSpaceInfo(
  */
 export async function updateSpace(
   spaceId: string,
-  editToken: string,
   data: UpdateSpaceRequest
 ): Promise<SpaceInfoResponse> {
   try {
-    if (!editToken) {
-      throw new Error('Edit token is required')
-    }
-
-    const queryParams = buildQueryParams({ edit_token: editToken })
-    const response = await apiClient.put<SpaceInfoResponse>(`/api/spaces/${spaceId}/update/${queryParams}`, data)
+    const queryParams = buildQueryParams({
+      title: data.title || '',
+      members_to_add: data.members_to_add || []
+    })
+    const response = await apiClient.put<SpaceInfoResponse>(`/api/spaces/${spaceId}/update/${queryParams}`)
     return validateResponse(response)
   } catch (error) {
     console.error('Failed to update space:', error)

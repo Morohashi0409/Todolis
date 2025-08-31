@@ -37,11 +37,11 @@
                 </v-card-title>
                 <v-card-text>
                   <div class="url-display">
-                    <div class="url-text">{{ editorUrl }}</div>
+                    <div class="url-text">{{ url }}</div>
                     <v-btn
                       color="primary"
                       variant="flat"
-                      @click="copyToClipboard(editorUrl, 'editor')"
+                      @click="copyToClipboard(url, 'editor')"
                       :loading="copying.editor"
                       class="copy-button"
                     >
@@ -52,7 +52,7 @@
                     <v-btn
                       color="success"
                       variant="outlined"
-                      @click="shareToLine(editorUrl)"
+                      @click="shareToLine(url)"
                       class="share-button"
                     >
                       <img src="./line.svg" alt="LINE" class="mr-2 line-icon" />
@@ -61,7 +61,7 @@
                     <v-btn
                       color="info"
                       variant="outlined"
-                      @click="shareToOther(editorUrl)"
+                      @click="shareToOther(url)"
                       class="share-button"
                     >
                       <v-icon class="mr-2">mdi-share-variant</v-icon>
@@ -84,7 +84,7 @@
               </div>
 
               <!-- 閲覧用リンク -->
-              <v-card class="link-card" elevation="2">
+              <!-- <v-card class="link-card" elevation="2">
                 <v-card-title class="link-title viewer-title">
                   <v-icon color="info" class="mr-2">mdi-eye</v-icon>
                   閲覧用リンク
@@ -123,7 +123,7 @@
                     </v-btn>
                   </div>
                 </v-card-text>
-              </v-card>
+              </v-card> -->
             </div>
 
             <!-- セキュリティ設定 -->
@@ -145,7 +145,7 @@
     </v-main>
 
     <!-- PIN設定ダイアログ -->
-    <v-dialog v-model="showPinDialog" max-width="400">
+    <!-- <v-dialog v-model="showPinDialog" max-width="400">
       <v-card>
         <v-card-title class="text-h6">
           PINコード設定
@@ -169,27 +169,27 @@
           <v-btn color="primary" @click="setPinCode">設定</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
 
     <!-- フッター -->
     <v-footer class="footer" color="dark">
       <v-container>
         <v-row>
           <v-col cols="12" md="6">
-            <div class="footer-links">
+            <!-- <div class="footer-links">
               <a href="#" class="footer-link">よくある質問</a>
               <a href="#" class="footer-link">お問い合わせ</a>
               <a href="#" class="footer-link">広告掲載について</a>
               <a href="#" class="footer-link">アンケート</a>
-            </div>
+            </div> -->
           </v-col>
           <v-col cols="12" md="6">
-            <div class="footer-links">
+            <!-- <div class="footer-links">
               <a href="#" class="footer-link">プライバシーポリシー</a>
               <a href="#" class="footer-link">利用規約</a>
               <a href="#" class="footer-link">運営元情報</a>
               <a href="#" class="footer-link">関連サイト</a>
-            </div>
+            </div> -->
           </v-col>
         </v-row>
         <v-row>
@@ -210,8 +210,9 @@ const {
   pinCode,
   copying,
   rules,
-  editorUrl,
-  viewerUrl,
+  url,
+  // url,
+  // viewerUrl,
   copyToClipboard,
   shareToLine,
   shareToOther,

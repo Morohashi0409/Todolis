@@ -67,7 +67,7 @@
         color: white !important;
         margin: 0;
         line-height: 1.2;
-        text-align: center;
+        text-align: left;
         
         @media (max-width: $breakpoint-sm) {
           font-size: 1.1rem;
@@ -401,16 +401,34 @@
                 }
                 
                 .goal-actions {
-                  display: flex;
-                  justify-content: flex-end;
-                  align-items: center;
-                  gap: $spacing-sm;
-                  flex-shrink: 0;
+                  .d-flex {
+                    display: flex !important;
+                    justify-content: center !important;
+                    align-items: center !important;
+                    gap: $spacing-lg !important;
+                    flex-direction: row !important;
+                  }
                   
-                  .save-button,
                   .cancel-button {
-                    font-size: 0.9rem;
-                    min-width: 80px;
+                    color: #ef4444 !important;
+                    border-color: #ef4444 !important;
+                    width: 40px;
+                    height: 40px;
+                    flex-shrink: 0;
+                    
+                    &:hover {
+                      background-color: rgba(239, 68, 68, 0.1) !important;
+                    }
+                  }
+                  
+                  .save-button {
+                    width: 40px;
+                    height: 40px;
+                    flex-shrink: 0;
+                    
+                    .v-icon {
+                      color: white !important;
+                    }
                   }
                 }
               }
@@ -629,7 +647,7 @@
         
         .space-title {
           font-size: 1.1rem;
-          text-align: center;
+          text-align: left;
           margin-bottom: $spacing-xs;
         }
         
@@ -743,14 +761,30 @@
                   }
                   
                   .goal-actions {
-                    flex-direction: column;
-                    gap: $spacing-sm;
-                    margin-top: $spacing-sm;
+                    .d-flex {
+                      justify-content: center !important;
+                      gap: $spacing-lg !important;
+                      flex-direction: row !important;
+                    }
                     
-                    .save-button,
+                    .cancel-button,
+                    .save-button {
+                      width: 40px;
+                      height: 40px;
+                      flex-shrink: 0;
+                    }
+                    
                     .cancel-button {
-                      width: 100%;
-                      order: unset;
+                      color: #ef4444 !important;
+                      border-color: #ef4444 !important;
+                      
+                      &:hover {
+                        background-color: rgba(239, 68, 68, 0.1) !important;
+                      }
+                    }
+                    
+                    .save-button .v-icon {
+                      color: white !important;
                     }
                   }
                 }
@@ -890,9 +924,31 @@
                   }
                   
                   .goal-actions {
-                    flex-direction: row;
-                    justify-content: flex-end;
-                    gap: $spacing-sm;
+                    .d-flex {
+                      justify-content: center !important;
+                      gap: $spacing-lg !important;
+                      flex-direction: row !important;
+                    }
+                    
+                    .cancel-button,
+                    .save-button {
+                      width: 40px;
+                      height: 40px;
+                      flex-shrink: 0;
+                    }
+                    
+                    .cancel-button {
+                      color: #ef4444 !important;
+                      border-color: #ef4444 !important;
+                      
+                      &:hover {
+                        background-color: rgba(239, 68, 68, 0.1) !important;
+                      }
+                    }
+                    
+                    .save-button .v-icon {
+                      color: white !important;
+                    }
                   }
                 }
               }
@@ -922,6 +978,160 @@
           }
         }
       }
+    }
+  }
+}
+
+// スペース編集ダイアログのスタイル
+.space-edit-form {
+  .form-field {
+    margin-bottom: $spacing-lg;
+
+    .field-label {
+      display: block;
+      font-size: $font-size-sm;
+      font-weight: $font-weight-medium;
+      color: $text-secondary;
+      margin-bottom: $spacing-sm;
+    }
+
+    .input-field {
+      .v-field {
+        background: white;
+        border-radius: $border-radius-lg;
+        border: 1px solid rgba($grace-orange, 0.3);
+
+        &--focused {
+          border-color: $grace-orange;
+          box-shadow: 0 0 0 2px rgba($grace-orange, 0.1);
+        }
+      }
+    }
+
+    .member-input-container {
+      display: flex;
+      gap: $spacing-md;
+      align-items: flex-start;
+
+      @media (max-width: $breakpoint-sm) {
+        flex-direction: column;
+        gap: $spacing-sm;
+
+        .member-input {
+          width: 100%;
+        }
+
+        .add-button {
+          width: 100%;
+        }
+      }
+
+      .member-input {
+        flex: 1;
+      }
+
+      .add-button {
+        flex-shrink: 0;
+        background: $grace-orange !important;
+        color: white;
+        font-weight: $font-weight-medium;
+        padding: 0 $spacing-lg;
+        border-radius: $border-radius-lg;
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: $shadow-md;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    .help-text {
+      font-size: $font-size-xs;
+      color: $text-tertiary;
+      margin-top: $spacing-xs;
+    }
+
+    .member-list-container {
+      margin-top: $spacing-lg;
+
+      .member-list {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-sm;
+
+        .member-item {
+          display: flex;
+          align-items: center;
+          gap: $spacing-md;
+          padding: $spacing-md;
+          background: rgba($grace-orange, 0.1);
+          border: 1px solid rgba($grace-orange, 0.3);
+          border-radius: $border-radius-md;
+
+          .member-number {
+            font-weight: $font-weight-medium;
+            color: $grace-orange;
+            min-width: 80px;
+          }
+
+          .member-name {
+            flex: 1;
+            color: $text-primary;
+          }
+
+          .remove-button {
+            color: #ef4444 !important;
+            
+            &:hover {
+              background: rgba(239, 68, 68, 0.1);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 設定ボタンのスタイル
+.settings-button {
+  opacity: 0.8;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    transform: rotate(45deg);
+  }
+}
+
+// スペース編集ダイアログのアクションボタン
+.v-dialog .v-card .v-card-actions {
+  justify-content: center;
+  gap: 32px; // 2rem相当
+  padding: 24px;
+
+  .cancel-button {
+    color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    width: 48px;
+    height: 48px;
+
+    &:hover {
+      background-color: rgba(239, 68, 68, 0.1) !important;
+    }
+  }
+
+  .save-button {
+    width: 48px;
+    height: 48px;
+
+    .v-icon {
+      color: white !important;
     }
   }
 }

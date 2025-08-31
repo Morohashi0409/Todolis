@@ -4,11 +4,23 @@ html, body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   background-color: #f8f9fa; // 薄い背景色を追加
+  height: 100%;
+  overflow-x: hidden;
+}
+
+// iOS Safari対応 - 100vh問題の解決
+html {
+  height: -webkit-fill-available;
+}
+
+body {
+  height: -webkit-fill-available;
 }
 
 // メインアプリケーションコンテナ
 .v-application {
   background-color: #f8f9fa !important; // 薄い背景色
+  padding: 4px; // 全体に4pxのマージンを追加
 }
 
 // メインコンテンツエリア
@@ -47,4 +59,54 @@ html, body {
 
 .fade-in {
   animation: fadeIn 0.5s ease-out;
+}
+
+// スマホキーボード対応
+@supports (height: 100dvh) {
+  html, body {
+    height: 100dvh;
+  }
+}
+
+// テキストフィールドのフォーカス時のスタイル
+.v-text-field input,
+.v-textarea textarea {
+  font-size: 16px !important; // iOS Safariでズーム防止
+  touch-action: manipulation; // タッチ操作の最適化
+}
+
+// キーボード表示時の調整
+@media screen and (max-width: 768px) {
+  .v-application {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
+  // フォーカス時の入力フィールドの調整
+  .v-text-field.v-input--focused,
+  .v-textarea.v-input--focused,
+  .v-select.v-input--focused {
+    position: relative;
+    z-index: 1000;
+  }
+}
+
+// キーボードが表示されている時の調整
+@supports (height: 100dvh) {
+  @media screen and (max-width: 768px) {
+    .v-application {
+      min-height: 100dvh;
+    }
+  }
+}
+
+// iPhone X以降の安全エリア対応
+@supports (padding: max(0px)) {
+  .v-application {
+    // 基本の4pxパディングと安全エリアを組み合わせ
+    padding-top: max(4px, env(safe-area-inset-top));
+    padding-right: max(4px, env(safe-area-inset-right));
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
+    padding-left: max(4px, env(safe-area-inset-left));
+  }
 }
