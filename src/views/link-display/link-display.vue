@@ -206,17 +206,13 @@
 import { useLinkDisplay } from './index'
 
 const {
-  showPinDialog,
-  pinCode,
   copying,
-  rules,
   url,
   // url,
   // viewerUrl,
   copyToClipboard,
   shareToLine,
   shareToOther,
-  setPinCode,
   goToSpace
 } = useLinkDisplay()
 </script>
