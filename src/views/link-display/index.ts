@@ -9,9 +9,6 @@ export const useLinkDisplay = () => {
 
   const showPinDialog = ref(false)
   const pinCode = ref('')
-  
-  // 開発環境判定
-  const isDevelopment = computed(() => process.env.NODE_ENV === 'development')
 
   const copying = reactive({
     editor: false,

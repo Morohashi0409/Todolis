@@ -1,4 +1,4 @@
-import { ref, computed, reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSpaceStore } from '@/stores/space'
 import { createSpace } from '@/api/spaces'

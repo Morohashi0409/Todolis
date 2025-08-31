@@ -120,7 +120,7 @@ export function validateResponse<T>(response: any): T {
 
 // トークン検証用のユーティリティ
 export function validateToken(token: string): boolean {
-  return token && token.length > 0
+  return Boolean(token && token.length > 0)
 }
 
 // URLパラメータの構築用ユーティリティ
