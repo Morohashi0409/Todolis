@@ -491,7 +491,6 @@ export const useGoalDisplay = () => {
     // 現在のスペース情報をフォームに設定
     editSpaceData.title = spaceName.value
     editSpaceMemberList.value = [...members.value]
-    editSpaceData.members = [...members.value]
     currentEditMemberInput.value = ''
     isEditingSpace.value = true
   }
@@ -499,7 +498,7 @@ export const useGoalDisplay = () => {
   const cancelEditingSpace = () => {
     isEditingSpace.value = false
     editSpaceData.title = ''
-    editSpaceData.members = []
+    editSpaceData.members_to_add = []
     editSpaceMemberList.value = []
     currentEditMemberInput.value = ''
   }
@@ -507,14 +506,12 @@ export const useGoalDisplay = () => {
   const addEditMember = () => {
     if (currentEditMemberInput.value.trim()) {
       editSpaceMemberList.value.push(currentEditMemberInput.value.trim())
-      editSpaceData.members = [...editSpaceMemberList.value]
       currentEditMemberInput.value = ''
     }
   }
 
   const removeEditMember = (index: number) => {
     editSpaceMemberList.value.splice(index, 1)
-    editSpaceData.members = [...editSpaceMemberList.value]
   }
 
   const saveSpaceEdit = async () => {
