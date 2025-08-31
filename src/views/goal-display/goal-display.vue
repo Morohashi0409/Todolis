@@ -150,8 +150,8 @@
           <!-- 目標がある場合または新規追加フォーム表示中の場合 -->
           <div v-else-if="filteredGoals.length > 0 || isAddingGoal" class="goals-list">
             <!-- TODO追加ボタン（目標がある場合） -->
-            <v-card v-if="!isAddingGoal && filteredGoals.length > 0" class="goal-card add-goal-button-card" elevation="2">
-              <v-card-text class="goal-content">
+            <v-card v-if="!isAddingGoal && filteredGoals.length > 0" class="goal-card add-goal-button-card" elevation="1">
+              <v-card-text class="goal-content pa-3">
                 <div class="add-goal-button-content">
                   <v-btn
                     color="primary"
@@ -168,8 +168,8 @@
             </v-card>
 
             <!-- 新規作成フォーム -->
-            <v-card v-if="isAddingGoal" class="goal-card new-goal-card" elevation="2">
-              <v-card-text class="goal-content">
+            <v-card v-if="isAddingGoal" class="goal-card new-goal-card" elevation="1">
+              <v-card-text class="goal-content pa-3">
                 <div class="goal-header">
                   <div class="goal-info">
                     <div class="goal-title-input">
@@ -246,9 +246,9 @@
               :key="goal.id"
               class="goal-card"
               :class="{ 'goal-completed': goal.isCompleted }"
-              elevation="2"
+              elevation="1"
             >
-              <v-card-text class="goal-content">
+              <v-card-text class="goal-content pa-3">
                 <div class="goal-header">
                   <div class="goal-title-row">
                     <div class="goal-checkbox">

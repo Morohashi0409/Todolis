@@ -9,7 +9,7 @@
     
     .header-container {
       .space-title {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: $font-weight-bold;
         color: white;
         margin: 0 0 $spacing-xs 0;
@@ -122,15 +122,15 @@
         
         .add-goal-button-card {
           .goal-content {
-            padding: $spacing-lg;
+            padding: $spacing-md;
             
             .add-goal-button-content {
               text-align: center;
               
               .add-goal-btn {
-                min-width: 200px;
-                height: 48px;
-                font-size: 1rem;
+                min-width: 180px;
+                height: 42px;
+                font-size: 0.9rem;
                 font-weight: $font-weight-bold;
                 border: 2px dashed $grace-orange;
                 color: $grace-orange;
@@ -146,7 +146,7 @@
         
               .goals-list {
         .goal-card {
-          margin-bottom: $spacing-lg;
+          margin-bottom: $spacing-md;
           border-radius: $border-radius-lg;
           transition: $transition-normal;
           
@@ -173,7 +173,7 @@
                       
                       .v-field__input {
                         padding-top: 0 !important;
-                        font-size: 1.2rem !important;
+                        font-size: 1.1rem !important;
                         font-weight: $font-weight-bold !important;
                         color: $text-primary !important;
                       }
@@ -242,30 +242,38 @@
           }
             
             .goal-content {
-              padding: $spacing-lg;
+              padding: $spacing-sm $spacing-md;
               
               .goal-header {
                 display: flex;
                 flex-direction: column;
-                gap: $spacing-sm;
+                gap: $spacing-xs;
                 
                 .goal-title-row {
                   display: flex;
                   align-items: flex-start;
-                  gap: $spacing-md;
+                  gap: $spacing-sm;
+                  height: 24px;
                   
                   .goal-checkbox {
                     flex-shrink: 0;
                     margin-top: 2px;
+                    
+                    .v-checkbox {
+                      // チェックボックスのサイズを小さく
+                      .v-selection-control__wrapper {
+                        height: 20px;
+                      }
+                    }
                   }
                   
                   .goal-title {
                     flex: 1;
-                    font-size: 1.2rem;
+                    font-size: 1rem;
                     font-weight: $font-weight-bold;
                     color: $text-primary;
                     margin: 0;
-                    line-height: 1.4;
+                    line-height: 1.3;
                   }
                   
                   .goal-actions {
@@ -288,24 +296,25 @@
                 }
                 
                 .goal-info {
-                  margin-left: calc(#{$spacing-md} + 40px); // チェックボックス幅分をオフセット
+                  margin-left: calc(#{$spacing-sm} + 24px); // チェックボックス幅分をオフセット（小さく調整）
                   
                   .goal-meta {
                     display: flex;
-                    gap: $spacing-md;
-                    margin-bottom: $spacing-sm;
+                    gap: $spacing-sm;
+                    margin-bottom: $spacing-xs;
                     flex-wrap: wrap;
                     
                     .goal-assignee,
                     .goal-due-date {
                       display: flex;
                       align-items: center;
-                      font-size: 0.9rem;
+                      font-size: 0.85rem;
                       color: $text-secondary;
                       
                       .v-icon {
                         color: $text-tertiary;
                         margin-right: $spacing-xs;
+                        font-size: 14px;
                       }
                     }
                   }
@@ -313,7 +322,8 @@
                   .goal-description {
                     color: $text-secondary;
                     margin: 0;
-                    line-height: 1.5;
+                    line-height: 1.4;
+                    font-size: 0.9rem;
                   }
                 }
               }
