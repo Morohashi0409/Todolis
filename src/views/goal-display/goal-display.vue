@@ -125,17 +125,122 @@
           </v-row>
         </div>
 
+
+
         <!-- 目標リスト -->
         <div class="goals-section">
-          <div v-if="filteredGoals.length === 0" class="empty-state">
+          <!-- 目標が0件で追加フォームも表示されていない場合 -->
+          <div v-if="filteredGoals.length === 0 && !isAddingGoal" class="empty-state">
             <v-icon size="80" color="grey" class="empty-icon">mdi-clipboard-text</v-icon>
             <h3 class="empty-title">まだ目標がありません</h3>
             <p class="empty-message">
               最初の目標を追加して、グループの活動を始めましょう
             </p>
+            <v-btn
+              color="primary"
+              size="large"
+              @click="startAddingGoal"
+              class="mt-4"
+            >
+              <v-icon class="mr-2">mdi-plus</v-icon>
+              TODO を追加
+            </v-btn>
           </div>
 
-          <div v-else class="goals-list">
+          <!-- 目標がある場合または新規追加フォーム表示中の場合 -->
+          <div v-else-if="filteredGoals.length > 0 || isAddingGoal" class="goals-list">
+            <!-- TODO追加ボタン（目標がある場合） -->
+            <v-card v-if="!isAddingGoal && filteredGoals.length > 0" class="goal-card add-goal-button-card" elevation="2">
+              <v-card-text class="goal-content">
+                <div class="add-goal-button-content">
+                  <v-btn
+                    color="primary"
+                    size="large"
+                    variant="outlined"
+                    @click="startAddingGoal"
+                    class="add-goal-btn"
+                  >
+                    <v-icon class="mr-2">mdi-plus</v-icon>
+                    TODO を追加
+                  </v-btn>
+                </div>
+              </v-card-text>
+            </v-card>
+
+            <!-- 新規作成フォーム -->
+            <v-card v-if="isAddingGoal" class="goal-card new-goal-card" elevation="2">
+              <v-card-text class="goal-content">
+                <div class="goal-header">
+                  <div class="goal-info">
+                    <div class="goal-title-input">
+                      <v-text-field
+                        v-model="newGoal.title"
+                        placeholder="新しい目標のタイトルを入力..."
+                        variant="plain"
+                        density="compact"
+                        class="title-input"
+                        hide-details
+                      />
+                    </div>
+                    <div class="goal-meta">
+                      <div class="goal-assignee-input">
+                        <v-select
+                          v-model="newGoal.assignee"
+                          :items="assigneeOptions"
+                          label="担当者を選択"
+                          variant="outlined"
+                          density="compact"
+                          class="assignee-input"
+                          hide-details
+                        />
+                      </div>
+                      <div class="goal-due-date-input">
+                        <v-text-field
+                          v-model="newGoal.dueDate"
+                          type="date"
+                          variant="outlined"
+                          density="compact"
+                          class="due-date-input"
+                          hide-details
+                        />
+                      </div>
+                    </div>
+                    <div class="goal-description-input">
+                      <v-textarea
+                        v-model="newGoal.description"
+                        placeholder="詳細説明を入力... (任意)"
+                        variant="outlined"
+                        density="compact"
+                        rows="2"
+                        class="description-input"
+                        hide-details
+                      />
+                    </div>
+                  </div>
+                  <div class="goal-actions">
+                    <v-btn
+                      color="primary"
+                      size="small"
+                      @click="addGoal"
+                      :disabled="!newGoal.title.trim() || !newGoal.assignee?.trim() || !newGoal.dueDate"
+                      class="save-button"
+                    >
+                      保存
+                    </v-btn>
+                    <v-btn
+                      variant="outlined"
+                      size="small"
+                      @click="cancelAddingGoal"
+                      class="cancel-button"
+                    >
+                      キャンセル
+                    </v-btn>
+                  </div>
+                </div>
+              </v-card-text>
+            </v-card>
+
+            <!-- 既存の目標カード -->
             <v-card
               v-for="goal in filteredGoals"
               :key="goal.id"
@@ -145,18 +250,38 @@
             >
               <v-card-text class="goal-content">
                 <div class="goal-header">
-                  <div class="goal-checkbox">
-                    <v-checkbox
-                      v-model="goal.isCompleted"
-                      :color="goal.isCompleted ? 'success' : 'primary'"
-                      @change="toggleGoalStatus(goal)"
-                      :disabled="!isEditor"
-                    />
-                  </div>
-                  <div class="goal-info">
+                  <div class="goal-title-row">
+                    <div class="goal-checkbox">
+                      <v-checkbox
+                        v-model="goal.isCompleted"
+                        :color="goal.isCompleted ? 'success' : 'primary'"
+                        @change="toggleGoalStatus(goal)"
+                      />
+                    </div>
                     <h3 class="goal-title" :class="{ 'completed': goal.isCompleted }">
                       {{ goal.title }}
                     </h3>
+                    <div class="goal-actions">
+                      <!-- コメント・ハートアイコンは一旦コメントアウト
+                      <v-btn
+                        icon="mdi-comment-outline"
+                        variant="text"
+                        size="small"
+                        @click="showComments(goal)"
+                        class="action-button"
+                      />
+                      <v-btn
+                        icon="mdi-heart-outline"
+                        variant="text"
+                        size="small"
+                        @click="toggleReaction(goal, 'heart')"
+                        :class="{ 'reaction-active': hasReaction(goal, 'heart') }"
+                        class="action-button"
+                      />
+                      -->
+                    </div>
+                  </div>
+                  <div class="goal-info">
                     <div class="goal-meta">
                       <span v-if="goal.assignee" class="goal-assignee">
                         <v-icon size="16" class="mr-1">mdi-account</v-icon>
@@ -171,26 +296,9 @@
                       {{ goal.description }}
                     </p>
                   </div>
-                  <div class="goal-actions">
-                    <v-btn
-                      icon="mdi-comment-outline"
-                      variant="text"
-                      size="small"
-                      @click="showComments(goal)"
-                      class="action-button"
-                    />
-                    <v-btn
-                      icon="mdi-heart-outline"
-                      variant="text"
-                      size="small"
-                      @click="toggleReaction(goal, 'heart')"
-                      :class="{ 'reaction-active': hasReaction(goal, 'heart') }"
-                      class="action-button"
-                    />
-                  </div>
                 </div>
 
-                <!-- コメント・リアクション -->
+                <!-- コメント・リアクションセクション（一旦コメントアウト）
                 <div v-if="goal.showDetails" class="goal-details">
                   <div class="comments-section">
                     <h4 class="comments-title">コメント</h4>
@@ -226,6 +334,7 @@
                     </div>
                   </div>
                 </div>
+                -->
               </v-card-text>
             </v-card>
           </div>
@@ -234,67 +343,7 @@
       </v-container>
     </v-main>
 
-    <!-- 目標追加フローティングボタン -->
-    <v-btn
-      v-if="isEditor"
-      color="primary"
-      icon="mdi-plus"
-      size="large"
-      class="add-goal-button"
-      @click="showAddGoalDialog = true"
-    />
 
-    <!-- 目標追加ダイアログ -->
-    <v-dialog v-model="showAddGoalDialog" max-width="500">
-      <v-card>
-        <v-card-title class="text-h6">
-          新しい目標を追加
-        </v-card-title>
-        <v-card-text>
-          <v-form @submit.prevent="addGoal" ref="goalForm">
-            <v-text-field
-              v-model="newGoal.title"
-              label="目標タイトル"
-              variant="outlined"
-              :rules="[rules.required]"
-              required
-              class="mb-4"
-            />
-            <v-text-field
-              v-model="newGoal.assignee"
-              label="担当者（任意）"
-              variant="outlined"
-              class="mb-4"
-            />
-            <v-text-field
-              v-model="newGoal.dueDate"
-              label="期限（任意）"
-              type="date"
-              variant="outlined"
-              class="mb-4"
-            />
-            <v-textarea
-              v-model="newGoal.description"
-              label="詳細説明（任意）"
-              variant="outlined"
-              rows="3"
-              class="mb-4"
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn @click="showAddGoalDialog = false">キャンセル</v-btn>
-          <v-btn
-            color="primary"
-            @click="addGoal"
-            :disabled="!newGoal.title.trim()"
-          >
-            追加する
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
     <!-- フッター -->
     <v-footer class="footer" color="dark">
@@ -332,14 +381,14 @@ import { useGoalDisplay } from './index'
 
 const {
   // 状態
-  showAddGoalDialog,
+  isAddingGoal,
   sortOrder,
   filters,
   newGoal,
-  rules,
   spaceName,
-  isEditor,
-  goals,
+  spaceDescription,
+  loading,
+  error,
   
   // 計算プロパティ
   totalGoals,
@@ -351,14 +400,15 @@ const {
   
   // メソッド
   toggleGoalStatus,
-  showComments,
-  addComment,
-  toggleReaction,
-  hasReaction,
   addGoal,
   formatDate,
-  formatTime
+  startAddingGoal,
+  cancelAddingGoal,
+  
+  // 再取得メソッド
+  fetchGoals,
+  fetchSpaceInfo
 } = useGoalDisplay()
 </script>
 
-<style src="./goal-display.scss" lang="scss" scoped></style>
+<style src="./goal-display.scss" lang="scss"></style>

@@ -46,7 +46,7 @@ export function validateCreateSpaceRequest(data: CreateSpaceRequest): { isValid:
 
 /**
  * スペース作成API
- * POST /api/spaces
+ * POST /api/spaces/add/
  * 既存のPython APIに合わせて、titleをクエリパラメータ、membersをJSONボディで送信
  */
 export async function createSpace(data: CreateSpaceRequest): Promise<CreateSpaceResponse> {
@@ -59,7 +59,7 @@ export async function createSpace(data: CreateSpaceRequest): Promise<CreateSpace
     
     // デバッグ用：送信データをログ出力
     console.log('Sending createSpace request:', {
-      url: `/api/spaces?title=${encodeURIComponent(data.title)}`,
+      url: `/api/spaces/add/?title=${encodeURIComponent(data.title)}`,
       data: data,
       dataType: typeof data,
       membersType: Array.isArray(data.members) ? 'array' : typeof data.members,
@@ -67,7 +67,7 @@ export async function createSpace(data: CreateSpaceRequest): Promise<CreateSpace
     })
     
     // titleをクエリパラメータ、membersをJSONボディで送信
-    const url = `${apiClient['config'].baseURL}/api/spaces?title=${encodeURIComponent(data.title)}`
+    const url = `${apiClient['config'].baseURL}/api/spaces/add/?title=${encodeURIComponent(data.title)}`
     
     const response = await fetch(url, {
       method: 'POST',
@@ -92,19 +92,13 @@ export async function createSpace(data: CreateSpaceRequest): Promise<CreateSpace
 
 /**
  * スペース情報取得API
- * GET /api/spaces/{space_id}
+ * GET /api/spaces/{space_id}/get/
  */
 export async function getSpaceInfo(
-  spaceId: string,
-  viewToken: string
+  spaceId: string
 ): Promise<SpaceInfoResponse> {
   try {
-    if (!viewToken) {
-      throw new Error('View token is required')
-    }
-
-    const queryParams = buildQueryParams({ view_token: viewToken })
-    const response = await apiClient.get<SpaceInfoResponse>(`/api/spaces/${spaceId}${queryParams}`)
+    const response = await apiClient.get<SpaceInfoResponse>(`/api/spaces/${spaceId}/get/`)
     return validateResponse(response)
   } catch (error) {
     console.error('Failed to get space info:', error)
@@ -114,7 +108,7 @@ export async function getSpaceInfo(
 
 /**
  * スペース情報更新API
- * PUT /api/spaces/{space_id}
+ * PUT /api/spaces/{space_id}/update/
  */
 export async function updateSpace(
   spaceId: string,
@@ -127,7 +121,7 @@ export async function updateSpace(
     }
 
     const queryParams = buildQueryParams({ edit_token: editToken })
-    const response = await apiClient.put<SpaceInfoResponse>(`/api/spaces/${spaceId}${queryParams}`, data)
+    const response = await apiClient.put<SpaceInfoResponse>(`/api/spaces/${spaceId}/update/${queryParams}`, data)
     return validateResponse(response)
   } catch (error) {
     console.error('Failed to update space:', error)
@@ -159,11 +153,11 @@ export async function getSpaceSummary(
 
 /**
  * スペースの存在確認
- * GET /api/spaces/{space_id} (ヘッドリクエストで軽量チェック)
+ * GET /api/spaces/{space_id}/get/ (ヘッドリクエストで軽量チェック)
  */
 export async function checkSpaceExists(spaceId: string): Promise<boolean> {
   try {
-    const response = await fetch(`${apiClient['config'].baseURL}/api/spaces/${spaceId}`, {
+    const response = await fetch(`${apiClient['config'].baseURL}/api/spaces/${spaceId}/get/`, {
       method: 'HEAD',
     })
     return response.ok
@@ -188,7 +182,7 @@ export async function validateSpaceToken(
       [type === 'view' ? 'view_token' : 'edit_token']: token 
     })
     
-    const response = await apiClient.get(`/api/spaces/${spaceId}${queryParams}`)
+    const response = await apiClient.get(`/api/spaces/${spaceId}/get/${queryParams}`)
     return !!response
   } catch (error) {
     console.error('Failed to validate space token:', error)
@@ -212,7 +206,7 @@ export async function testSpaceEndpoint(): Promise<any> {
     console.log('Test data:', testData)
     
     // titleをクエリパラメータ、membersをJSONボディで送信
-    const url = `${apiClient['config'].baseURL}/api/spaces?title=${encodeURIComponent(testData.title)}`
+    const url = `${apiClient['config'].baseURL}/api/spaces/add/?title=${encodeURIComponent(testData.title)}`
     
     const response = await fetch(url, {
       method: 'POST',

@@ -10,11 +10,11 @@ import type {
 
 /**
  * 目標一覧取得API
- * GET /api/goals/list/{space_id}
+ * GET /api/goals/list/{space_id}/get/
  */
 export async function getGoalList(spaceId: string): Promise<GoalListResponse> {
   try {
-    const response = await apiClient.get<GoalListResponse>(`/api/goals/list/${spaceId}`)
+    const response = await apiClient.get<GoalListResponse>(`/api/goals/list/${spaceId}/get/`)
     return validateResponse(response)
   } catch (error) {
     console.error('Failed to get goal list:', error)
@@ -24,22 +24,17 @@ export async function getGoalList(spaceId: string): Promise<GoalListResponse> {
 
 /**
  * 目標作成API
- * POST /api/spaces/{space_id}/goals
+ * POST /api/goals/{space_id}/add/
  */
 export async function createGoal(
   spaceId: string,
-  editToken: string,
   data: CreateGoalRequest
 ): Promise<{ goal: Goal; space_id: string; task_id: string }> {
   try {
-    if (!editToken) {
-      throw new Error('Edit token is required')
-    }
-
-    const queryParams = buildQueryParams({ edit_token: editToken })
+    // クエリパラメータとしてデータを送信
+    const queryParams = buildQueryParams(data)
     const response = await apiClient.post<{ goal: Goal; space_id: string; task_id: string }>(
-      `/api/spaces/${spaceId}/goals${queryParams}`,
-      data
+      `/api/goals/${spaceId}/add/${queryParams}`
     )
     return validateResponse(response)
   } catch (error) {
@@ -50,7 +45,7 @@ export async function createGoal(
 
 /**
  * 目標更新API
- * PUT /api/goals/{goal_id}
+ * PUT /api/goals/{goal_id}/update/
  */
 export async function updateGoal(
   goalId: string,
@@ -64,7 +59,7 @@ export async function updateGoal(
 
     const queryParams = buildQueryParams({ edit_token: editToken })
     const response = await apiClient.put<{ goal: Goal; goal_id: string; message: string }>(
-      `/api/goals/${goalId}${queryParams}`,
+      `/api/goals/${goalId}/update/${queryParams}`,
       data
     )
     return validateResponse(response)
@@ -76,7 +71,7 @@ export async function updateGoal(
 
 /**
  * 目標削除API
- * DELETE /api/goals/{goal_id}
+ * DELETE /api/goals/{goal_id}/delete/
  */
 export async function deleteGoal(goalId: string, editToken: string): Promise<void> {
   try {
@@ -85,7 +80,7 @@ export async function deleteGoal(goalId: string, editToken: string): Promise<voi
     }
 
     const queryParams = buildQueryParams({ edit_token: editToken })
-    await apiClient.delete(`/api/goals/${goalId}${queryParams}`)
+    await apiClient.delete(`/api/goals/${goalId}/delete/${queryParams}`)
   } catch (error) {
     console.error('Failed to delete goal:', error)
     throw error

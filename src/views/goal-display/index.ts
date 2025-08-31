@@ -8,7 +8,7 @@ export const useGoalDisplay = () => {
   const route = useRoute()
 
   // 状態管理
-  const showAddGoalDialog = ref(false)
+  const isAddingGoal = ref(false)
   const sortOrder = ref('createdAt')
   const filters = reactive({
     assignee: '',
@@ -35,10 +35,8 @@ export const useGoalDisplay = () => {
   // スペース情報
   const spaceName = ref('')
   const spaceDescription = ref('')
-  const isEditor = ref(false)
   const spaceId = ref('')
-  const viewToken = ref('')
-  const editToken = ref('')
+  const members = ref<string[]>([])
 
   // 目標データ
   const goals = ref<Goal[]>([])
@@ -48,10 +46,9 @@ export const useGoalDisplay = () => {
 
   // 計算プロパティ
   const assigneeOptions = computed(() => {
-    const assignees = goals.value
-      .map((g: Goal) => g.assignee)
-      .filter(Boolean) as string[]
-    return [...new Set(assignees)]
+    // スペースメンバーのnicknameのみを使用
+    const spaceMembers = members.value || []
+    return spaceMembers.map(nickname => ({ title: nickname, value: nickname }))
   })
 
   const statusOptions = [
@@ -82,9 +79,14 @@ export const useGoalDisplay = () => {
           if (!a.dueDate || !b.dueDate) return 0
           return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
         case 'title':
-          return a.title.localeCompare(b.title)
+          const titleA = a.title || ''
+          const titleB = b.title || ''
+          return titleA.localeCompare(titleB)
         default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          // 作成日時でのソート（新しい順）
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0
+          return dateB - dateA
       }
     })
 
@@ -97,17 +99,14 @@ export const useGoalDisplay = () => {
       loading.value = true
       error.value = null
 
-      if (!spaceId.value || !viewToken.value) {
-        throw new Error('スペースIDまたはトークンが不足しています')
-      }
-
-      const spaceInfo = await getSpaceInfo(spaceId.value, viewToken.value)
+      const spaceInfo = await getSpaceInfo(spaceId.value)
       
       spaceName.value = spaceInfo.space.title
       spaceDescription.value = `メンバー数: ${spaceInfo.members.length}人`
       
-      // 編集権限の確認（editTokenがあるかどうかで判定）
-      isEditor.value = !!editToken.value
+      // メンバー情報を保存（nicknameのみ）
+      members.value = spaceInfo.members.map((member: any) => member.nickname || member.name || member)
+      
     } catch (err) {
       console.error('スペース情報の取得に失敗:', err)
       error.value = 'スペース情報の取得に失敗しました'
@@ -128,54 +127,68 @@ export const useGoalDisplay = () => {
 
       const goalList = await getGoalList(spaceId.value)
       
-      // データ形式を変換
-      totalGoals.value = goalList.total_count
-      completedGoals.value = goalList.done_count
-      progressPercentage.value = goalList.achievement_rate
+      // データ形式を変換（安全に取得）
+      totalGoals.value = goalList.total_count || 0
+      completedGoals.value = goalList.done_count || 0
+      progressPercentage.value = goalList.achievement_rate || 0
 
       // 完了済みと未完了の目標を統合
       const allGoals: Goal[] = []
 
       // 完了済み目標を変換
-      goalList.done_tasks.forEach((task: any) => {
-        allGoals.push({
-          id: task.id,
-          title: task.title,
-          description: task.detail || '',
-          assignee: task.assignee || '',
-          dueDate: task.due_on || '',
-          isCompleted: true,
-          createdAt: task.created_at,
-          updatedAt: task.updated_at,
-          comments: [],
-          reactions: [],
-          showDetails: false,
-          newComment: ''
+      if (goalList.done_tasks && Array.isArray(goalList.done_tasks)) {
+        goalList.done_tasks.forEach((task: any) => {
+          allGoals.push({
+            id: task.id,
+            title: task.title,
+            description: task.detail || '',
+            assignee: task.assignee || '',
+            dueDate: task.due_on || '',
+            isCompleted: true,
+            createdAt: task.created_at,
+            updatedAt: task.updated_at,
+            comments: [],
+            reactions: [],
+            showDetails: false,
+            newComment: ''
+          })
         })
-      })
+      }
 
       // 未完了目標を変換
-      goalList.todo_tasks.forEach((task: any) => {
-        allGoals.push({
-          id: task.id,
-          title: task.title,
-          description: task.detail || '',
-          assignee: task.assignee || '',
-          dueDate: task.due_on || '',
-          isCompleted: false,
-          createdAt: task.created_at,
-          updatedAt: task.updated_at,
-          comments: [],
-          reactions: [],
-          showDetails: false,
-          newComment: ''
+      if (goalList.todo_tasks && Array.isArray(goalList.todo_tasks)) {
+        goalList.todo_tasks.forEach((task: any) => {
+          allGoals.push({
+            id: task.id,
+            title: task.title,
+            description: task.detail || '',
+            assignee: task.assignee || '',
+            dueDate: task.due_on || '',
+            isCompleted: false,
+            createdAt: task.created_at,
+            updatedAt: task.updated_at,
+            comments: [],
+            reactions: [],
+            showDetails: false,
+            newComment: ''
+          })
         })
-      })
+      }
 
       goals.value = allGoals
-    } catch (err) {
+    } catch (err: any) {
       console.error('目標一覧の取得に失敗:', err)
-      error.value = '目標一覧の取得に失敗しました'
+      
+      // 目標が0件の場合は正常な状態として扱う
+      if (err.message && err.message.includes('No data found for space_id')) {
+        totalGoals.value = 0
+        completedGoals.value = 0
+        progressPercentage.value = 0
+        goals.value = []
+        error.value = null
+      } else {
+        error.value = '目標一覧の取得に失敗しました'
+      }
     } finally {
       loading.value = false
     }
@@ -184,16 +197,15 @@ export const useGoalDisplay = () => {
   // メソッド
   const toggleGoalStatus = async (goal: Goal) => {
     try {
-      // TODO: 目標ステータス更新APIを実装
+      // ローカルで即座にステータスを更新（UI応答性向上）
       goal.isCompleted = !goal.isCompleted
       goal.updatedAt = new Date().toISOString()
       
+      // 進捗データを即座に更新
       if (goal.isCompleted) {
         completedGoals.value++
-        totalGoals.value++
       } else {
         completedGoals.value--
-        totalGoals.value--
       }
       
       // 進捗率を再計算
@@ -201,7 +213,22 @@ export const useGoalDisplay = () => {
         ? Math.round((completedGoals.value / totalGoals.value) * 100)
         : 0
       
-      console.log(`${goal.title} のステータスを更新しました`)
+      console.log(`${goal.title} のステータスを更新しました（ローカル）`)
+      
+      // バックグラウンドでAPI更新を試行（editTokenの実装が必要なため、現在は無効化）
+      // TODO: editTokenの管理機能を実装後、以下のコードを有効化してサーバー同期を行う
+      /*
+      try {
+        const updateData = {
+          status: goal.isCompleted ? 'done' : 'todo'
+        }
+        await updateGoal(goal.id, editToken, updateData)
+        console.log(`${goal.title} のステータスをサーバーに同期しました`)
+      } catch (apiError) {
+        console.error('目標ステータスの同期に失敗:', apiError)
+        error.value = '目標ステータスの同期に失敗しました。データはローカルで保持されています。'
+      }
+      */
     } catch (err) {
       console.error('目標ステータスの更新に失敗:', err)
       error.value = '目標ステータスの更新に失敗しました'
@@ -250,12 +277,6 @@ export const useGoalDisplay = () => {
     try {
       if (!newGoal.title.trim()) return
 
-      if (!spaceId.value || !editToken.value) {
-        error.value = '編集権限がありません'
-        return
-      }
-
-      loading.value = true
       error.value = null
 
       // APIに送信するデータ形式に変換
@@ -266,27 +287,100 @@ export const useGoalDisplay = () => {
         due_on: newGoal.dueDate || ''
       }
 
-      // 目標を作成
-      const result = await createGoal(spaceId.value, editToken.value, goalData)
+      // 必須フィールドの検証
+      if (!goalData.title) {
+        error.value = 'タイトルは必須です'
+        return
+      }
+      if (!goalData.assignee) {
+        error.value = '担当者は必須です'
+        return
+      }
+      if (!goalData.due_on) {
+        error.value = '期限は必須です'
+        return
+      }
+
+      // 一時的なIDを生成してローカルに即座に追加
+      const tempId = `temp_${Date.now()}`
+      const currentTime = new Date().toISOString()
       
-      // 成功時は目標リストを再取得
-      await fetchGoals()
-      
-      // フォームをリセット
-      newGoal.title = ''
-      newGoal.assignee = ''
-      newGoal.dueDate = ''
-      newGoal.description = ''
-      
-      showAddGoalDialog.value = false
-      
-      console.log('目標を作成しました:', result)
+      const newGoalLocal: Goal = {
+        id: tempId,
+        title: goalData.title,
+        description: goalData.detail,
+        assignee: goalData.assignee,
+        dueDate: goalData.due_on,
+        isCompleted: false,
+        createdAt: currentTime,
+        updatedAt: currentTime,
+        comments: [],
+        reactions: [],
+        showDetails: false,
+        newComment: ''
+      }
+
+      // ローカルに即座に追加（UI更新）
+      goals.value.unshift(newGoalLocal)
+      totalGoals.value++
+      progressPercentage.value = totalGoals.value > 0 
+        ? Math.round((completedGoals.value / totalGoals.value) * 100)
+        : 0
+
+      // フォームをリセットしてフォームを閉じる
+      clearNewGoal()
+      isAddingGoal.value = false
+
+      // バックグラウンドでAPIに送信し、成功時に実際のデータで置き換え
+      try {
+        const result = await createGoal(spaceId.value, goalData)
+        
+        // 成功時：一時的な目標を実際のデータで置き換え
+        const index = goals.value.findIndex(g => g.id === tempId)
+        if (index !== -1) {
+          goals.value[index] = {
+            id: result.task_id || tempId,
+            title: result.goal?.title || goalData.title,
+            description: result.goal?.detail || goalData.detail,
+            assignee: result.goal?.assignee || goalData.assignee,
+            dueDate: result.goal?.due_on || goalData.due_on,
+            isCompleted: result.goal?.status === 'done' || false,
+            createdAt: result.goal?.created_at || currentTime,
+            updatedAt: result.goal?.updated_at || currentTime,
+            comments: [],
+            reactions: [],
+            showDetails: false,
+            newComment: ''
+          }
+        }
+        
+        console.log('目標を作成しました:', result)
+      } catch (apiError) {
+        console.error('目標の作成に失敗:', apiError)
+        
+        // API失敗時：ローカルに追加した目標を削除し、エラー表示
+        const index = goals.value.findIndex(g => g.id === tempId)
+        if (index !== -1) {
+          goals.value.splice(index, 1)
+          totalGoals.value--
+          progressPercentage.value = totalGoals.value > 0 
+            ? Math.round((completedGoals.value / totalGoals.value) * 100)
+            : 0
+        }
+        
+        error.value = '目標の作成に失敗しました。再度お試しください。'
+      }
     } catch (err) {
-      console.error('目標の作成に失敗:', err)
-      error.value = '目標の作成に失敗しました'
-    } finally {
-      loading.value = false
+      console.error('目標の追加処理に失敗:', err)
+      error.value = '目標の追加処理に失敗しました'
     }
+  }
+
+  const clearNewGoal = () => {
+    newGoal.title = ''
+    newGoal.assignee = ''
+    newGoal.dueDate = ''
+    newGoal.description = ''
   }
 
   const formatDate = (dateString: string) => {
@@ -302,13 +396,20 @@ export const useGoalDisplay = () => {
     })
   }
 
+  const startAddingGoal = () => {
+    isAddingGoal.value = true
+  }
+
+  const cancelAddingGoal = () => {
+    isAddingGoal.value = false
+    clearNewGoal()
+  }
+
   // 初期化処理
   const initialize = async () => {
     try {
-      // ルートパラメータからスペースIDとトークンを取得
+      // ルートパラメータからスペースIDを取得
       spaceId.value = route.params.spaceId as string
-      viewToken.value = route.query.view_token as string
-      editToken.value = route.query.edit_token as string
 
       if (!spaceId.value) {
         error.value = 'スペースIDが指定されていません'
@@ -332,14 +433,14 @@ export const useGoalDisplay = () => {
 
   return {
     // 状態
-    showAddGoalDialog,
+    isAddingGoal,
     sortOrder,
     filters,
     newGoal,
     rules,
     spaceName,
     spaceDescription,
-    isEditor,
+    members,
     goals,
     loading,
     error,
@@ -359,8 +460,11 @@ export const useGoalDisplay = () => {
     toggleReaction,
     hasReaction,
     addGoal,
+    clearNewGoal,
     formatDate,
     formatTime,
+    startAddingGoal,
+    cancelAddingGoal,
     
     // 再取得メソッド
     fetchGoals,
