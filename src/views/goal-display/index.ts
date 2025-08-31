@@ -2,7 +2,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Goal, CreateGoalRequest } from '@/types'
 import { getSpaceInfo } from '@/api/spaces'
-import { getGoalList, createGoal } from '@/api/goals'
+import { getGoalList, createGoal, updateGoalStatus } from '@/api/goals'
 
 export const useGoalDisplay = () => {
   const route = useRoute()
@@ -127,6 +127,8 @@ export const useGoalDisplay = () => {
 
       const goalList = await getGoalList(spaceId.value)
       
+      console.log('API Response:', goalList) // デバッグログ追加
+      
       // データ形式を変換（安全に取得）
       totalGoals.value = goalList.total_count || 0
       completedGoals.value = goalList.done_count || 0
@@ -138,9 +140,10 @@ export const useGoalDisplay = () => {
       // 完了済み目標を変換
       if (goalList.done_tasks && Array.isArray(goalList.done_tasks)) {
         goalList.done_tasks.forEach((task: any) => {
+          console.log('Done task:', task) // デバッグログ追加
           allGoals.push({
             id: task.id,
-            title: task.title,
+            title: task.title || task.detail, // titleがない場合はdetailを使用
             description: task.detail || '',
             assignee: task.assignee || '',
             dueDate: task.due_on || '',
@@ -158,9 +161,10 @@ export const useGoalDisplay = () => {
       // 未完了目標を変換
       if (goalList.todo_tasks && Array.isArray(goalList.todo_tasks)) {
         goalList.todo_tasks.forEach((task: any) => {
+          console.log('Todo task:', task) // デバッグログ追加
           allGoals.push({
             id: task.id,
-            title: task.title,
+            title: task.title || task.detail, // titleがない場合はdetailを使用
             description: task.detail || '',
             assignee: task.assignee || '',
             dueDate: task.due_on || '',
@@ -196,7 +200,24 @@ export const useGoalDisplay = () => {
 
   // メソッド
   const toggleGoalStatus = async (goal: Goal) => {
+    console.log('toggleGoalStatus called with goal:', {
+      id: goal.id,
+      title: goal.title,
+      isCompleted: goal.isCompleted
+    })
+    
+    // IDが存在しない場合はエラーを出して処理を停止
+    if (!goal.id) {
+      console.error('Goal ID is missing:', goal)
+      error.value = '目標のIDが見つかりません。データの読み込みに問題があります。'
+      return
+    }
+    
     try {
+      // 現在の状態を保存（ロールバック用）
+      const oldStatus = goal.isCompleted
+      const oldCompleted = completedGoals.value
+      
       // ローカルで即座にステータスを更新（UI応答性向上）
       goal.isCompleted = !goal.isCompleted
       goal.updatedAt = new Date().toISOString()
@@ -213,25 +234,61 @@ export const useGoalDisplay = () => {
         ? Math.round((completedGoals.value / totalGoals.value) * 100)
         : 0
       
-      console.log(`${goal.title} のステータスを更新しました（ローカル）`)
+      console.log(`${goal.title} のステータスを更新しました:`, {
+        oldStatus,
+        newStatus: goal.isCompleted,
+        oldCompleted,
+        newCompleted: completedGoals.value,
+        progressPercentage: progressPercentage.value
+      })
       
-      // バックグラウンドでAPI更新を試行（editTokenの実装が必要なため、現在は無効化）
-      // TODO: editTokenの管理機能を実装後、以下のコードを有効化してサーバー同期を行う
-      /*
+      // バックエンドAPIを非同期で呼び出し
       try {
-        const updateData = {
-          status: goal.isCompleted ? 'done' : 'todo'
+        const newStatus: 'todo' | 'done' = goal.isCompleted ? 'done' : 'todo'
+        console.log(`Calling API with goal ID: ${goal.id}, status: ${newStatus}`)
+        
+        const result = await updateGoalStatus(goal.id, newStatus)
+        
+        console.log(`${goal.title} のAPIステータス更新が成功しました:`, result.message)
+        
+        // サーバーからの応答で目標データを更新（必要に応じて）
+        if (result.goal) {
+          goal.title = result.goal.title || goal.title
+          goal.description = result.goal.detail || goal.description
+          goal.assignee = result.goal.assignee || goal.assignee
+          goal.dueDate = result.goal.due_on || goal.dueDate
+          goal.isCompleted = result.goal.status === 'done'
+          goal.updatedAt = result.goal.updated_at || goal.updatedAt
         }
-        await updateGoal(goal.id, editToken, updateData)
-        console.log(`${goal.title} のステータスをサーバーに同期しました`)
-      } catch (apiError) {
-        console.error('目標ステータスの同期に失敗:', apiError)
-        error.value = '目標ステータスの同期に失敗しました。データはローカルで保持されています。'
+        
+      } catch (apiError: any) {
+        console.error('APIステータス更新に失敗:', apiError)
+        
+        // API失敗時：ローカルの変更をロールバック
+        goal.isCompleted = oldStatus
+        goal.updatedAt = new Date().toISOString()
+        
+        // 進捗データもロールバック
+        completedGoals.value = oldCompleted
+        
+        // 進捗率を再計算
+        progressPercentage.value = totalGoals.value > 0 
+          ? Math.round((completedGoals.value / totalGoals.value) * 100)
+          : 0
+        
+        // エラーメッセージを表示
+        if (apiError.response?.status === 404) {
+          error.value = '目標が見つかりません。削除された可能性があります。'
+        } else if (apiError.response?.status >= 500) {
+          error.value = 'サーバーエラーが発生しました。しばらく経ってから再試行してください。'
+        } else {
+          error.value = '目標の更新に失敗しました。ネットワーク接続を確認してください。'
+        }
       }
-      */
+      
     } catch (err) {
       console.error('目標ステータスの更新に失敗:', err)
-      error.value = '目標ステータスの更新に失敗しました'
+      error.value = '目標ステータスの更新処理に失敗しました'
     }
   }
 

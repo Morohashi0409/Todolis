@@ -88,15 +88,22 @@ export async function deleteGoal(goalId: string, editToken: string): Promise<voi
 }
 
 /**
- * 目標のステータス変更
- * PUT /api/goals/{goal_id} の特殊ケース
+ * 目標のステータス変更（FastAPI対応）
+ * PUT /api/goals/{goal_id}
  */
 export async function updateGoalStatus(
   goalId: string,
-  editToken: string,
   status: 'todo' | 'done'
-): Promise<{ goal: Goal; goal_id: string; message: string }> {
-  return updateGoal(goalId, editToken, { status })
+): Promise<{ goal: Goal; message: string }> {
+  try {
+    const response = await apiClient.put<{ goal: Goal; message: string }>(
+      `/api/goals/${goalId}?status=${status}`
+    )
+    return validateResponse(response)
+  } catch (error) {
+    console.error('Failed to update goal status:', error)
+    throw error
+  }
 }
 
 /**
@@ -152,10 +159,9 @@ export async function updateGoalTitle(
  * PUT /api/goals/{goal_id} の特殊ケース
  */
 export async function completeGoal(
-  goalId: string,
-  editToken: string
-): Promise<{ goal: Goal; goal_id: string; message: string }> {
-  return updateGoalStatus(goalId, editToken, 'done')
+  goalId: string
+): Promise<{ goal: Goal; message: string }> {
+  return updateGoalStatus(goalId, 'done')
 }
 
 /**
@@ -163,8 +169,7 @@ export async function completeGoal(
  * PUT /api/goals/{goal_id} の特殊ケース
  */
 export async function uncompleteGoal(
-  goalId: string,
-  editToken: string
-): Promise<{ goal: Goal; goal_id: string; message: string }> {
-  return updateGoalStatus(goalId, editToken, 'todo')
+  goalId: string
+): Promise<{ goal: Goal; message: string }> {
+  return updateGoalStatus(goalId, 'todo')
 }

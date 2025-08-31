@@ -279,9 +279,9 @@
                   <div class="goal-title-row">
                     <div class="goal-checkbox">
                       <v-checkbox
-                        v-model="goal.isCompleted"
+                        :model-value="goal.isCompleted"
                         :color="goal.isCompleted ? 'success' : 'primary'"
-                        @change="toggleGoalStatus(goal)"
+                        @update:model-value="toggleGoalStatus(goal)"
                       />
                     </div>
                     <h3 class="goal-title" :class="{ 'completed': goal.isCompleted }">
