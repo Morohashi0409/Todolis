@@ -417,9 +417,6 @@ const {
   error,
   
   // 計算プロパティ
-  totalGoals,
-  completedGoals,
-  progressPercentage,
   assigneeOptions,
   statusOptions,
   filteredGoals,
