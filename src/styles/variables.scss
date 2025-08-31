@@ -50,11 +50,12 @@ $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 
-// ブレークポイント
-$breakpoint-sm: 600px;
-$breakpoint-md: 960px;
-$breakpoint-lg: 1264px;
-$breakpoint-xl: 1904px;
+// ブレークポイント（モバイルファースト）
+$breakpoint-xs: 480px;  // 小型スマートフォン
+$breakpoint-sm: 600px;  // 大型スマートフォン
+$breakpoint-md: 960px;  // タブレット
+$breakpoint-lg: 1264px; // ラップトップ
+$breakpoint-xl: 1904px; // デスクトップ
 
 // タイポグラフィ
 $font-family-primary: 'Roboto', sans-serif;

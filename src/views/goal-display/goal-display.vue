@@ -1,39 +1,54 @@
 <template>
   <div class="goal-display">
     <!-- ヘッダー -->
-    <v-app-bar color="primary" dark elevation="0" class="header">
-      <v-container class="header-container">
-        <v-row align="center">
-          <v-col cols="12" md="6">
-            <h1 class="space-title">{{ spaceName }}</h1>
-            <p v-if="spaceDescription" class="space-description">{{ spaceDescription }}</p>
-          </v-col>
-          <v-col cols="12" md="6" class="text-right">
-            <div class="progress-info">
-              <div class="progress-circle">
-                <v-progress-circular
-                  :model-value="progressPercentage"
-                  :size="60"
-                  :width="6"
-                  color="success"
-                  class="progress-indicator"
-                >
-                  {{ progressPercentage }}%
-                </v-progress-circular>
+    <v-app-bar 
+      color="primary" 
+      dark 
+      elevation="0" 
+      class="header" 
+      height="auto"
+      :extension-height="0"
+      flat
+      fixed
+      app
+    >
+      <template v-slot:default>
+        <v-container class="header-container" fluid>
+          <v-row align="center">
+            <v-col cols="12">
+              <h1 class="space-title">{{ spaceName || 'スペース名' }}</h1>
+              <p v-if="spaceDescription" class="space-description">{{ spaceDescription }}</p>
+            </v-col>
+            <!-- 進捗情報を一時的にコメントアウト -->
+            <!--
+            <v-col cols="12" sm="12" md="4" lg="4" class="text-md-right text-center">
+              <div class="progress-info">
+                <div class="progress-circle">
+                  <v-progress-circular
+                    :model-value="progressPercentage"
+                    :size="$vuetify.display.xs ? 50 : $vuetify.display.sm ? 55 : 60"
+                    :width="$vuetify.display.xs ? 5 : 6"
+                    color="success"
+                    class="progress-indicator"
+                  >
+                    {{ progressPercentage }}%
+                  </v-progress-circular>
+                </div>
+                <div class="progress-text">
+                  <span class="progress-label">完了率</span>
+                  <span class="progress-value">{{ completedGoals }}/{{ totalGoals }}</span>
+                </div>
               </div>
-              <div class="progress-text">
-                <span class="progress-label">完了率</span>
-                <span class="progress-value">{{ completedGoals }}/{{ totalGoals }}</span>
-              </div>
-            </div>
-          </v-col>
-        </v-row>
-      </v-container>
+            </v-col>
+            -->
+          </v-row>
+        </v-container>
+      </template>
     </v-app-bar>
 
     <!-- メインコンテンツ -->
     <v-main class="main-content">
-      <v-container class="content-container">
+      <v-container class="content-container" fluid>
         <!-- ローディング状態 -->
         <div v-if="loading" class="loading-section">
           <v-row justify="center">
@@ -41,7 +56,7 @@
               <v-progress-circular
                 indeterminate
                 color="primary"
-                size="64"
+                :size="$vuetify.display.xs ? 48 : 64"
               />
               <p class="mt-4">データを読み込み中...</p>
             </v-col>
@@ -51,7 +66,7 @@
         <!-- エラー状態 -->
         <div v-else-if="error" class="error-section">
           <v-row justify="center">
-            <v-col cols="12" md="8" class="text-center">
+            <v-col cols="12" sm="10" md="8" class="text-center">
               <v-alert
                 type="error"
                 variant="tonal"
@@ -59,19 +74,20 @@
               >
                 {{ error }}
               </v-alert>
-              <v-btn
-                color="primary"
-                @click="fetchGoals"
-                class="mr-2"
-              >
-                再試行
-              </v-btn>
-              <v-btn
-                variant="outlined"
-                @click="fetchSpaceInfo"
-              >
-                スペース情報を再取得
-              </v-btn>
+              <div class="d-flex flex-column flex-sm-row justify-center gap-2">
+                <v-btn
+                  color="primary"
+                  @click="fetchGoals"
+                >
+                  再試行
+                </v-btn>
+                <v-btn
+                  variant="outlined"
+                  @click="fetchSpaceInfo"
+                >
+                  スペース情報を再取得
+                </v-btn>
+              </div>
             </v-col>
           </v-row>
         </div>
@@ -81,7 +97,7 @@
           <!-- フィルタ・ソート -->
           <div class="filters-section">
           <v-row align="center">
-            <v-col cols="12" md="6">
+            <v-col cols="12" lg="8">
               <div class="filter-controls">
                 <v-select
                   v-model="filters.assignee"
@@ -89,8 +105,9 @@
                   label="担当者で絞り込み"
                   variant="outlined"
                   density="compact"
-                  class="filter-select"
+                  class="filter-select assignee-filter"
                   clearable
+                  prepend-icon="mdi-account"
                 />
                 <v-select
                   v-model="filters.status"
@@ -98,27 +115,32 @@
                   label="状態で絞り込み"
                   variant="outlined"
                   density="compact"
-                  class="filter-select"
+                  class="filter-select status-filter"
+                  prepend-icon="mdi-check-circle"
                 />
               </div>
             </v-col>
-            <v-col cols="12" md="6" class="text-right">
+            <v-col cols="12" lg="4" class="text-lg-right text-center">
               <v-btn-toggle
                 v-model="sortOrder"
                 color="primary"
                 class="sort-toggle"
+                density="compact"
               >
                 <v-btn value="createdAt" size="small">
-                  <v-icon class="mr-1">mdi-clock</v-icon>
-                  作成順
+                  <v-icon class="mr-1">mdi-clock-outline</v-icon>
+                  <span class="d-none d-sm-inline">作成順</span>
+                  <span class="d-inline d-sm-none">作成順</span>
                 </v-btn>
                 <v-btn value="dueDate" size="small">
-                  <v-icon class="mr-1">mdi-calendar</v-icon>
-                  期限順
+                  <v-icon class="mr-1">mdi-calendar-outline</v-icon>
+                  <span class="d-none d-sm-inline">期限順</span>
+                  <span class="d-inline d-sm-none">期限順</span>
                 </v-btn>
                 <v-btn value="title" size="small">
-                  <v-icon class="mr-1">mdi-sort-alphabetical</v-icon>
-                  名前順
+                  <v-icon class="mr-1">mdi-text</v-icon>
+                  <span class="d-none d-sm-inline">名前順</span>
+                  <span class="d-inline d-sm-none">名前順</span>
                 </v-btn>
               </v-btn-toggle>
             </v-col>
@@ -172,7 +194,7 @@
               <v-card-text class="goal-content pa-3">
                 <div class="goal-header">
                   <div class="goal-info">
-                    <div class="goal-title-input">
+                    <div class="goal-title-input mb-3">
                       <v-text-field
                         v-model="newGoal.title"
                         placeholder="新しい目標のタイトルを入力..."
@@ -182,8 +204,8 @@
                         hide-details
                       />
                     </div>
-                    <div class="goal-meta">
-                      <div class="goal-assignee-input">
+                    <v-row class="goal-meta">
+                      <v-col cols="12" sm="6" class="goal-assignee-input">
                         <v-select
                           v-model="newGoal.assignee"
                           :items="assigneeOptions"
@@ -193,48 +215,52 @@
                           class="assignee-input"
                           hide-details
                         />
-                      </div>
-                      <div class="goal-due-date-input">
+                      </v-col>
+                      <v-col cols="12" sm="6" class="goal-due-date-input">
                         <v-text-field
                           v-model="newGoal.dueDate"
                           type="date"
+                          label="期限日"
                           variant="outlined"
                           density="compact"
                           class="due-date-input"
                           hide-details
                         />
-                      </div>
-                    </div>
-                    <div class="goal-description-input">
+                      </v-col>
+                    </v-row>
+                    <div class="goal-description-input mt-3">
                       <v-textarea
                         v-model="newGoal.description"
                         placeholder="詳細説明を入力... (任意)"
                         variant="outlined"
                         density="compact"
-                        rows="2"
+                        :rows="2"
+                        auto-grow
                         class="description-input"
                         hide-details
                       />
                     </div>
                   </div>
-                  <div class="goal-actions">
-                    <v-btn
-                      color="primary"
-                      size="small"
-                      @click="addGoal"
-                      :disabled="!newGoal.title.trim() || !newGoal.assignee?.trim() || !newGoal.dueDate"
-                      class="save-button"
-                    >
-                      保存
-                    </v-btn>
-                    <v-btn
-                      variant="outlined"
-                      size="small"
-                      @click="cancelAddingGoal"
-                      class="cancel-button"
-                    >
-                      キャンセル
-                    </v-btn>
+                  <div class="goal-actions mt-3">
+                    <div class="d-flex flex-column flex-sm-row justify-end gap-2">
+                      <v-btn
+                        variant="outlined"
+                        size="small"
+                        @click="cancelAddingGoal"
+                        class="cancel-button order-sm-1"
+                      >
+                        キャンセル
+                      </v-btn>
+                      <v-btn
+                        color="primary"
+                        size="small"
+                        @click="addGoal"
+                        :disabled="!newGoal.title.trim() || !newGoal.assignee?.trim() || !newGoal.dueDate"
+                        class="save-button order-sm-2"
+                      >
+                        保存
+                      </v-btn>
+                    </div>
                   </div>
                 </div>
               </v-card-text>
@@ -347,7 +373,7 @@
 
     <!-- フッター -->
     <v-footer class="footer" color="dark">
-      <v-container>
+      <v-container fluid>
         <v-row>
           <v-col cols="12" md="6">
             <div class="footer-links">
