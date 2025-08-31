@@ -464,6 +464,7 @@
           />
           <v-btn
             color="primary"
+            variant="flat"
             icon="mdi-check"
             @click="saveSpaceEdit"
             :loading="loading"

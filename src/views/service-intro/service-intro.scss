@@ -294,6 +294,7 @@
 @media (max-width: $breakpoint-md) {
   .service-intro {
     .hero-section {
+      padding-top: 8px;
       .hero-title {
         font-size: $font-size-xl;
       }
