@@ -35,7 +35,7 @@ export interface CreateSpaceResponse {
 
 export interface UpdateSpaceRequest {
   title?: string
-  members?: string[]
+  members_to_add?: string[]
 }
 
 export interface SpaceInfoResponse {
