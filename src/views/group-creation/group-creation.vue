@@ -5,7 +5,7 @@
       <v-container class="header-container">
         <v-row align="center">
           <v-col cols="12" class="text-center">
-            <h1 class="app-title">Todolis</h1>
+            <h1 class="app-title">Taskel</h1>
           </v-col>
         </v-row>
       </v-container>
@@ -138,7 +138,7 @@
         </v-row>
         <v-row>
           <v-col cols="12" class="text-center">
-            <p class="copyright">© 2025 Todolis</p>
+            <p class="copyright">© 2025 Taskel</p>
           </v-col>
         </v-row>
       </v-container>

@@ -7,7 +7,7 @@ const routes: RouteRecordRaw[] = [
     name: 'ServiceIntro',
     component: () => import('@/views/service-intro/service-intro.vue'),
     meta: {
-      title: 'Todolis - 続ける力を、シェアしよう'
+      title: 'Taskel - 続ける力を、シェアしよう'
     }
   },
   {
@@ -15,7 +15,7 @@ const routes: RouteRecordRaw[] = [
     name: 'GroupCreation',
     component: () => import('@/views/group-creation/group-creation.vue'),
     meta: {
-      title: 'グループ作成 - Todolis'
+      title: 'グループ作成 - Taskel'
     }
   },
   {
@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
     name: 'LinkDisplay',
     component: () => import('@/views/link-display/link-display.vue'),
     meta: {
-      title: '作成完了 - Todolis'
+      title: '作成完了 - Taskel'
     }
   },
   {
@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
     name: 'GoalDisplay',
     component: () => import('@/views/goal-display/goal-display.vue'),
     meta: {
-      title: '目標一覧 - Todolis'
+      title: '目標一覧 - Taskel'
     }
   }
 ]

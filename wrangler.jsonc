@@ -1,9 +1,5 @@
 {
   "name": "todolis-front",
   "compatibility_date": "2025-08-31",
-  "workers_dev": true,                // ← workers.dev に公開する
-  "assets": {
-    "directory": "./dist",
-    "html_handling": "force-index"    // "/" や任意パスを index.html に解決（SPA向け）
-  }
+  "pages_build_output_dir": "./dist"
 }

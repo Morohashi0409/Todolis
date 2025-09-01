@@ -498,7 +498,7 @@
         </v-row>
         <v-row>
           <v-col cols="12" class="text-center">
-            <p class="copyright">© 2025 Todolis</p>
+            <p class="copyright">© 2025 Taskel</p>
           </v-col>
         </v-row>
       </v-container>

@@ -1,4 +1,4 @@
-# Todolis
+# Taskel
 
 Todolisは、友達や家族と目標を共有し、進捗を管理できるWebアプリケーションです。
 
@@ -55,4 +55,4 @@ src/
 
 ## ライセンス
 
-© 2025 Todolis
+© 2025 Taskel

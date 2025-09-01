@@ -59,7 +59,7 @@ export const useLinkDisplay = () => {
   const shareToOther = (url: string) => {
     if (navigator.share) {
       navigator.share({
-        title: 'Todolis - グループページ',
+        title: 'Taskel - グループページ',
         text: 'グループページのリンクです',
         url: url
       })
