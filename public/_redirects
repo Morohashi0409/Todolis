@@ -1,0 +1,2 @@
+# SPA fallback - 静的ファイルが存在しない場合のみindex.htmlにフォールバック
+/*    /index.html   200
