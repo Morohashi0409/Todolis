@@ -20,7 +20,7 @@
               続ける力を、シェアしよう
             </h1>
             <p class="hero-subtitle">
-              友達や家族と目標を共有すれば、<br>
+              友達や家族とタスクを共有すれば、<br>
               「どこまで進んだ？」がひと目でわかる。<br>
               コメントやリアクションで支え合えば、<br>
               ひとりでは続かないことも、一緒なら楽しみに変わります。
@@ -56,9 +56,9 @@
                   mdi-format-list-checks
                 </v-icon>
               </div>
-              <h3 class="feature-title">目標達成を仲間と一緒に管理</h3>
+              <h3 class="feature-title">タスク達成を仲間と一緒に管理</h3>
               <p class="feature-description">
-                グループページに目標や「やることリスト」を登録していけば、みんなの進み具合がリアルタイムにひと目でわかります。「あの作業、終わったっけ？」がなくなります。
+                グループページにタスクや「やることリスト」を登録していけば、みんなの進み具合がリアルタイムにひと目でわかります。「あの作業、終わったっけ？」がなくなります。
               </p>
             </div>
           </v-col>
@@ -71,7 +71,7 @@
               </div>
               <h3 class="feature-title">会員登録不要でかんたん利用</h3>
               <p class="feature-description">
-                アプリインストール不要で、お使いのブラウザから会員登録なしですぐに利用できます。一緒に目標を達成する仲間にアプリをインストールしてもらう必要はありません。
+                アプリインストール不要で、お使いのブラウザから会員登録なしですぐに利用できます。一緒にタスクを達成する仲間にアプリをインストールしてもらう必要はありません。
               </p>
             </div>
           </v-col>
@@ -98,7 +98,7 @@
     <!-- ユースケースセクション -->
     <section class="usecases-section">
       <v-container>
-        <h2 class="section-title text-center">様々なシーンで目標達成をサポート</h2>
+        <h2 class="section-title text-center">様々なシーンでタスク達成をサポート</h2>
         <v-row justify="center">
           <v-col cols="12" md="10">
             <div class="tags-container">
@@ -121,7 +121,7 @@
     <!-- 使い方セクション -->
     <section class="howto-section">
       <v-container>
-        <h2 class="section-title text-center">Todolisの使い方</h2>
+        <h2 class="section-title text-center">Taskelの使い方</h2>
         <p class="howto-subtitle text-center">1分でグループが作成できます！</p>
         
         <v-row>
@@ -134,7 +134,7 @@
                   <v-icon size="80" color="primary">mdi-folder-plus</v-icon>
                 </div>
                 <p class="howto-description">
-                  まずは目標グループページを作成します。プロジェクトのタイトルとメンバーを入力しましょう。秘密の計画には、PINコードも設定できます。
+                  まずはタスクグループページを作成します。プロジェクトのタイトルとメンバーを入力しましょう。秘密の計画には、PINコードも設定できます。
                 </p>
               </v-card-text>
             </v-card>
@@ -160,7 +160,7 @@
             <v-card class="howto-card" elevation="2">
               <v-card-text class="text-center">
                 <div class="step-number">3</div>
-                <h3 class="howto-title">目標・タスクを記録する</h3>
+                <h3 class="howto-title">タスク・タスクを記録する</h3>
                 <div class="howto-image">
                   <v-icon size="80" color="primary">mdi-clipboard-check</v-icon>
                 </div>

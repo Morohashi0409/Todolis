@@ -2,10 +2,10 @@
 
 .goal-display {
   min-height: 100vh;
-  background: $page-background; // ページ全体の背景色を変更
+  background: $background-light; // 統一されたページ背景色を使用
 
   .header {
-    background: $grace-orange !important;
+    background: $main-color !important; // 統一されたメインカラーを使用
     height: auto !important;
     min-height: 48px; // より短いヘッダー高さ
     position: fixed !important; // 固定位置
@@ -75,7 +75,7 @@
       }
       
       .space-description {
-        color: rgba(255, 255, 255, 0.9) !important;
+        color: $text-primary-alpha-90 !important;
         margin: 0;
         font-size: 0.9rem; // 少し小さく
         text-align: center;
@@ -410,14 +410,14 @@
                   }
                   
                   .cancel-button {
-                    color: #ef4444 !important;
-                    border-color: #ef4444 !important;
+                    color: $main-color !important;
+                    border-color: $main-color !important;
                     width: 40px;
                     height: 40px;
                     flex-shrink: 0;
                     
                     &:hover {
-                      background-color: rgba(239, 68, 68, 0.1) !important;
+                      background-color: $main-color-alpha-10 !important;
                     }
                   }
                   
@@ -613,7 +613,7 @@
       justify-content: center;
       
       .footer-link {
-        color: rgba(255, 255, 255, 0.8);
+        color: $text-primary-alpha-80;
         text-decoration: none;
         font-size: 0.9rem;
         
@@ -625,7 +625,7 @@
     }
     
     .copyright {
-      color: rgba(255, 255, 255, 0.6);
+      color: $text-primary-alpha-60;
       font-size: 0.8rem;
       margin: 0;
     }
@@ -775,11 +775,11 @@
                     }
                     
                     .cancel-button {
-                      color: #ef4444 !important;
-                      border-color: #ef4444 !important;
+                      color: $main-color !important;
+                      border-color: $main-color !important;
                       
                       &:hover {
-                        background-color: rgba(239, 68, 68, 0.1) !important;
+                        background-color: $main-color-alpha-10 !important;
                       }
                     }
                     
@@ -938,11 +938,11 @@
                     }
                     
                     .cancel-button {
-                      color: #ef4444 !important;
-                      border-color: #ef4444 !important;
+                      color: $main-color !important;
+                      border-color: $main-color !important;
                       
                       &:hover {
-                        background-color: rgba(239, 68, 68, 0.1) !important;
+                        background-color: $main-color-alpha-10 !important;
                       }
                     }
                     
@@ -1086,10 +1086,10 @@
           }
 
           .remove-button {
-            color: #ef4444 !important;
+            color: $main-color !important;
             
             &:hover {
-              background: rgba(239, 68, 68, 0.1);
+              background: $main-color-alpha-10;
             }
           }
         }
@@ -1116,13 +1116,13 @@
   padding: 24px;
 
   .cancel-button {
-    color: #ef4444 !important;
-    border-color: #ef4444 !important;
+    color: $main-color !important;
+    border-color: $main-color !important;
     width: 48px;
     height: 48px;
 
     &:hover {
-      background-color: rgba(239, 68, 68, 0.1) !important;
+      background-color: $main-color-alpha-10 !important;
     }
   }
 

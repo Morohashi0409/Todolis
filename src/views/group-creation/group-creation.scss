@@ -1,12 +1,14 @@
+@import "@/styles/variables.scss";
+
 .group-creation {
   min-height: 100vh;
-  background: $page-background; // ページ全体の背景色を変更
+  background: $background-light; // 統一されたページ背景色を使用
   display: flex;
   flex-direction: column;
 
   // ヘッダー
   .header {
-    background: $grace-orange !important;
+    background: $main-color !important; // 統一されたメインカラーを使用
 
     .header-container {
       .app-title {
@@ -140,7 +142,7 @@
             }
 
             .remove-button {
-              color: #ef4444 !important;
+              color: $main-color !important;
               
               &:hover {
                 background: rgba(239, 68, 68, 0.1);

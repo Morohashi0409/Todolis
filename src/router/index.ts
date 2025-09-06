@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
     name: 'GoalDisplay',
     component: () => import('@/views/goal-display/goal-display.vue'),
     meta: {
-      title: '目標一覧 - Taskel'
+      title: 'タスク一覧 - Taskel'
     }
   }
 ]

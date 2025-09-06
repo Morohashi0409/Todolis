@@ -167,9 +167,9 @@
           <!-- 目標が0件で追加フォームも表示されていない場合 -->
           <div v-if="filteredGoals.length === 0 && !isAddingGoal" class="empty-state">
             <v-icon size="80" color="grey" class="empty-icon">mdi-clipboard-text</v-icon>
-            <h3 class="empty-title">まだ目標がありません</h3>
+            <h3 class="empty-title">まだタスクがありません</h3>
             <p class="empty-message">
-              最初の目標を追加して、グループの活動を始めましょう
+              最初のタスクを追加して、グループの活動を始めましょう
             </p>
             <v-btn
               color="primary"

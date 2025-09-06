@@ -2,10 +2,10 @@
 
 .link-display {
   min-height: 100vh;
-  background: $page-background; // ページ全体の背景色を変更
+  background: $background-light; // 統一されたページ背景色を使用
 
   .header {
-    background: $grace-orange !important;
+    background: $main-color !important; // 統一されたメインカラーを使用
     
     .header-container {
       .app-title {
@@ -40,13 +40,13 @@
         .completion-title {
           font-size: 2rem;
           font-weight: $font-weight-bold;
-          color: #19202B;
+          color: $text-secondary;
           margin-bottom: $spacing-sm;
         }
         
         .completion-subtitle {
           font-size: 1.1rem;
-          color: #19202B;
+          color: $text-secondary;
           margin: 0;
         }
       }
@@ -89,7 +89,7 @@
               .url-text {
                 flex: 1;
                 background: white;
-                border: 1px solid #E0E0E0;
+                border: 1px solid $border-color;
                 border-right: none;
                 border-top-right-radius: 0;
                 border-bottom-right-radius: 0;
@@ -112,8 +112,8 @@
                 min-width: 80px;
                 flex-shrink: 0;
                 border-radius: 0 8px 8px 0;
-                border: 1px solid #DC4409;
-                background: #DC4409 !important;
+                border: 1px solid $main-color;
+                background: $main-color !important;
                 color: white !important;
                 height: 48px;
                 min-height: 48px;
@@ -123,8 +123,8 @@
                 box-sizing: border-box;
                 
                 &:hover {
-                  background: #DC4409 !important;
-                  border-color: #DC4409;
+                  background: $main-color !important;
+                  border-color: $main-color;
                 }
                 
                 // 閲覧用リンクの場合の色調整
@@ -234,7 +234,7 @@
                 gap: 0;
                 
                 .url-text {
-                  border-right: 1px solid #E0E0E0;
+                  border-right: 1px solid $border-color;
                   border-radius: 8px 8px 0 0;
                   border-bottom: none;
                 }
@@ -242,7 +242,7 @@
                 .copy-button {
                   width: 100%;
                   border-radius: 0 0 8px 8px;
-                  border: 1px solid #DC4409;
+                  border: 1px solid $main-color;
                   border-top: none;
                   
                   &.viewer-copy {

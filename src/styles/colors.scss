@@ -1,0 +1,60 @@
+// Todolis カラーパレット
+// ユーザー要望に基づいたカラーコード統一
+
+// メインカラー（ボタン・ヘッダー背景）
+$main-color: #DC4409; // 温かみのあるオレンジ色
+
+// テキストカラー
+$text-primary: #FFFFFF;        // 白（主要タイトル/ボタン等）
+$text-secondary: #333333;      // 濃いグレー（補助・説明文）
+
+// 背景色
+$background-main: #FFFFFF;     // 白（メイン画面背景）
+$background-light: #F8F8F8;   // ごく薄いグレー（メイン画面背景）
+
+// ライン・分割線色
+$border-color: #E0E0E0;        // 薄グレー
+
+// アルファ値付きバリエーション（よく使用される）
+$main-color-alpha-10: rgba(239, 68, 68, 0.1);  // メインカラー 10%
+$main-color-alpha-30: rgba(239, 68, 68, 0.3);  // メインカラー 30%
+$text-primary-alpha-60: rgba(255, 255, 255, 0.6);  // 白 60%
+$text-primary-alpha-80: rgba(255, 255, 255, 0.8);  // 白 80%
+$text-primary-alpha-90: rgba(255, 255, 255, 0.9);  // 白 90%
+
+// 既存のカラー（後方互換性のため）
+$grace-orange: $main-color;  // 既存の grace-orange を新しいメインカラーにマッピング
+$grace-cyan: #00BCD4;        // 既存のシアンカラーは保持
+
+// 状態カラー（既存の機能で使用されている場合）
+$success: #4CAF50;
+$warning: #FF9800;
+$error: #F44336;
+$info: #2196F3;
+
+// CSS変数として出力（JavaScript等からも使用可能）
+:root {
+  // メインカラーパレット
+  --main-color: #{$main-color};
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --background-main: #{$background-main};
+  --background-light: #{$background-light};
+  --border-color: #{$border-color};
+  
+  // アルファ値付きバリエーション
+  --main-color-alpha-10: #{$main-color-alpha-10};
+  --main-color-alpha-30: #{$main-color-alpha-30};
+  --text-primary-alpha-60: #{$text-primary-alpha-60};
+  --text-primary-alpha-80: #{$text-primary-alpha-80};
+  --text-primary-alpha-90: #{$text-primary-alpha-90};
+  
+  // 後方互換性
+  --grace-orange: #{$grace-orange};
+  --grace-cyan: #{$grace-cyan};
+  --grace-text-primary: #{$text-secondary};
+  --grace-text-secondary: #666666;
+  --grace-background: #{$background-main};
+  --grace-surface: #f5f5f5;
+  --grace-page-background: #{$background-light};
+}

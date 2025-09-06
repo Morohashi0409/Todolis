@@ -1,9 +1,12 @@
+// カラーパレットのインポート
+@import './styles/colors';
+
 // グローバルスタイル
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
-  background-color: #f8f9fa; // 薄い背景色を追加
+  background-color: $background-light; // 統一されたカラーを使用
   height: 100%;
   overflow-x: hidden;
 }
@@ -19,13 +22,13 @@ body {
 
 // メインアプリケーションコンテナ
 .v-application {
-  background-color: #f8f9fa !important; // 薄い背景色
+  background-color: $background-light !important; // 統一されたカラーを使用
   padding: 4px; // 全体に4pxのマージンを追加
 }
 
 // メインコンテンツエリア
 .v-main {
-  background-color: #f8f9fa !important; // 薄い背景色
+  background-color: $background-light !important; // 統一されたカラーを使用
 }
 
 // グローバルコンテナ設定
@@ -34,16 +37,8 @@ body {
   margin: 0 auto !important; // 中央揃え
 }
 
-// カスタムCSS変数
-:root {
-  --grace-orange: #DC4409;
-  --grace-cyan: #00BCD4;
-  --grace-text-primary: #333333;
-  --grace-text-secondary: #666666;
-  --grace-background: #ffffff;
-  --grace-surface: #f5f5f5;
-  --grace-page-background: #f8f9fa; // ページ背景色を追加
-}
+// カスタムCSS変数（colors.scssで既に定義されているため削除可能だが、コメントとして残す）
+// CSS変数は colors.scss で定義済み
 
 // アニメーション
 @keyframes fadeIn {

@@ -1,23 +1,20 @@
-// Grace ブランドカラー
-$grace-orange: #DC4409;
-$grace-cyan: #00BCD4;
+// カラーパレットのインポート
+@import 'colors';
 
-// テキストカラー
-$text-primary: #333333;
-$text-secondary: #666666;
-$text-tertiary: #999999;
-$text-disabled: #999999;
-
-// 背景カラー
-$background-primary: #ffffff;
+// 追加の背景カラー（colors.scssで定義されていないもの）
+$background-primary: $background-main; // colors.scssの背景色に統一
 $background-secondary: #f5f5f5;
 $background-tertiary: #eeeeee;
-$page-background: #f8f9fa; // ページ全体の背景色
+$page-background: $background-light; // 後方互換性のため
 
 // 表面カラー
-$surface-primary: #ffffff;
+$surface-primary: $background-main;
 $surface-secondary: #fafafa;
-$surface-elevated: #ffffff;
+$surface-elevated: $background-main;
+
+// 追加のテキストカラー
+$text-tertiary: #999999;
+$text-disabled: #999999;
 
 // レイアウト設定
 $max-content-width: 844px; // コンテンツの最大幅
@@ -42,8 +39,8 @@ $border-radius-md: 8px;
 $border-radius-lg: 12px;
 $border-radius-xl: 16px;
 
-// ボーダーカラー
-$border-color: #e0e0e0;
+// ボーダーカラー（colors.scssから継承）
+// $border-color は colors.scss で定義済み
 
 // シャドウ
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
