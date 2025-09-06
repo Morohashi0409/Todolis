@@ -284,7 +284,6 @@ import { useRouter } from 'vue-router'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import checkLogo from '@/assets/check.png'
 import AppHeader from '@/components/AppHeader/AppHeader.vue'
 import { getRecentGroups, clearRecentGroups as clearRecentGroupsStorage, type RecentGroup } from '@/utils/localStorage'
 

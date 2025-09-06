@@ -87,7 +87,7 @@ export const useGoalDisplay = () => {
     })
   }
 
-  const performSwipeAction = async (goal: Goal, newStatus: boolean, direction: 'left' | 'right') => {
+  const performSwipeAction = async (goal: Goal, _newStatus: boolean, direction: 'left' | 'right') => {
     // アニメーションクラスを追加
     swipeAnimations.value.set(goal.id, `swipe-complete-${direction}`)
     
