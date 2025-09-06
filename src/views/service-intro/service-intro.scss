@@ -1,19 +1,193 @@
 @import "@/styles/variables.scss";
 
+// ヘッダーアニメーション用キーフレーム
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes headerGlow {
+  0% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 2px 16px rgba(255, 171, 38, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.15),
+      0 2px 16px rgba(255, 171, 38, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
 .service-intro {
   min-height: 100vh;
   background: $background-light; // 統一されたページ背景色を使用
+  // 固定ヘッダー用のマージンを追加
+  margin-top: 64px; // v-app-barの標準高さ
+  
+  @media (max-width: $breakpoint-md) {
+    margin-top: 56px; // タブレット以下
+  }
+
+  @media (max-width: $breakpoint-xs) {
+    margin-top: 48px; // 極小画面
+  }
+
+  // アニメーション用のクラス
+  .animated-element {
+    will-change: transform, opacity;
+  }
+
+  .hero-section,
+  .features-section,
+  .usecases-section,
+  .howto-section {
+    overflow: hidden; // アニメーションがはみ出さないように
+  }
 
   // ヘッダー
   .header {
-    background: $main-color !important; // 統一されたメインカラーを使用
+    // 美しいグラデーション背景
+    background: linear-gradient(
+      135deg,
+      $grace-orange 0%,
+      #ff6b35 25%,
+      #ff8c42 50%,
+      #ffa726 75%,
+      $grace-orange 100%
+    ) !important;
+    background-size: 200% 200%; // アニメーション用に大きくする
+    position: fixed !important;
+    top: 0;
+    z-index: 1000;
+    // ガラス効果
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 2px 16px rgba(255, 171, 38, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    
+    // グラデーションアニメーション
+    animation: gradientShift 8s ease infinite,
+               headerGlow 4s ease-in-out infinite alternate;
+    
+    // ホバー効果
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        0 4px 20px rgba(255, 171, 38, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    
+    // オーバーレイ効果
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%
+      );
+      transform: translateX(-100%);
+      animation: shimmer 3s ease-in-out infinite;
+    }
 
     .header-container {
+      position: relative;
+      z-index: 2;
+      
+      .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+      
+      .header-logo {
+        height: 40px;
+        width: auto;
+        // GSAPアニメーション用の初期状態
+        opacity: 0;
+        transform: scale(0) rotate(-180deg);
+        will-change: transform, opacity;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: scale(1.1);
+          filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+        }
+      }
+      
       .app-title {
         font-size: $font-size-xxl;
         font-weight: $font-weight-bold;
         margin: 0;
-        color: white;
+        color: $text-primary; // colors.scssの白を使用
+        text-shadow: 
+          0 2px 4px rgba(0, 0, 0, 0.3),
+          0 0 20px rgba(255, 255, 255, 0.5);
+        // タイトルアニメーション用の初期状態
+        opacity: 0;
+        transform: translateY(-30px);
+        will-change: transform, opacity, scale, rotation, filter;
+        perspective: 1000px;
+        transform-style: preserve-3d;
+        
+        // アニメーション用クラス
+        .char, .split-char, .dna-char {
+          display: inline-block;
+          will-change: transform, color, opacity;
+        }
+        
+        // ホバー効果（拡大や回転は削除）
+        transition: all 0.3s ease;
+        cursor: pointer;
+        user-select: none; // テキスト選択を無効化
+        
+        &:hover {
+          filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+          transform: scale(1.05); // 軽いホバー効果
+        }
+        
+        &:active {
+          transform: scale(0.98); // クリック時のフィードバック
+        }
       }
     }
   }
@@ -24,12 +198,40 @@
     color: white;
     position: relative;
     overflow: hidden;
+    // ヘッダー分の余白を確保（固定ヘッダー対応）
+    // Vuetifyのv-app-barの標準的な高さ + 安全マージン
+    padding-top: calc(64px + 2rem); // デスクトップ用
+
+    // レスポンシブ対応でヘッダー高さを調整
+    @media (max-width: $breakpoint-lg) {
+      padding-top: calc(64px + 1.5rem);
+    }
+
+    @media (max-width: $breakpoint-md) {
+      padding-top: calc(56px + 1.5rem); // タブレット用（v-app-barがより小さくなる）
+    }
+
+    @media (max-width: $breakpoint-sm) {
+      padding-top: calc(56px + 1rem); // スマートフォン用
+    }
+
+    @media (max-width: $breakpoint-xs) {
+      padding-top: calc(48px + 1rem); // 極小画面用
+    }
 
     .hero-container {
       .hero-content {
-        min-height: 60vh;
+        min-height: calc(100vh - 64px - 2rem); // ヘッダー分を引いた高さ
         display: flex;
         align-items: center;
+        
+        @media (max-width: $breakpoint-md) {
+          min-height: calc(100vh - 56px - 1.5rem);
+        }
+
+        @media (max-width: $breakpoint-xs) {
+          min-height: calc(100vh - 48px - 1rem);
+        }
       }
 
       .hero-title {
@@ -38,6 +240,9 @@
         line-height: 1.2;
         margin-bottom: $spacing-lg;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        // GSAPアニメーション用の初期状態
+        opacity: 0;
+        transform: translateY(50px);
       }
 
       .hero-subtitle {
@@ -46,6 +251,8 @@
         line-height: 1.6;
         margin-bottom: $spacing-xl;
         opacity: 0.9;
+        // GSAPアニメーション用の初期状態（後でGSAPで上書き）
+        transform: translateY(50px);
       }
 
       .hero-button {
@@ -55,6 +262,9 @@
         padding: $spacing-md $spacing-xl;
         border-radius: $border-radius-lg;
         transition: $transition-normal;
+        // GSAPアニメーション用の初期状態
+        opacity: 0;
+        transform: translateY(50px);
 
         &:hover {
           background: white !important;
@@ -75,6 +285,9 @@
       font-weight: $font-weight-bold;
       color: $text-secondary;
       margin-bottom: $spacing-xxl;
+      // GSAPアニメーション用の初期状態
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     .feature-card {
@@ -85,6 +298,9 @@
       align-items: center;
       justify-content: center;
       transition: $transition-normal;
+      // GSAPアニメーション用の初期状態
+      opacity: 0;
+      transform: translateY(50px) scale(0.8);
 
       &:hover {
         transform: translateY(-4px);
@@ -96,6 +312,10 @@
 
       .feature-icon {
         color: $grace-orange !important;
+        // GSAPアニメーション用
+        will-change: transform;
+        // フロートアニメーション用の初期状態
+        transform: rotate(-180deg) scale(0.5);
       }
 
       .feature-title {
@@ -115,6 +335,88 @@
     }
   }
 
+  // 最近のグループセクション
+  .recent-groups-section {
+    padding: $spacing-xxl 0;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(248, 250, 252, 0.95) 100%
+    );
+    border-top: 1px solid rgba(255, 171, 38, 0.1);
+    border-bottom: 1px solid rgba(255, 171, 38, 0.1);
+
+    .section-title {
+      font-size: $font-size-xxl;
+      font-weight: $font-weight-bold;
+      color: $text-secondary;
+      margin-bottom: $spacing-md;
+    }
+
+    .recent-groups-subtitle {
+      font-size: $font-size-lg;
+      color: $text-secondary;
+      margin-bottom: $spacing-xxl;
+    }
+
+    .recent-group-card {
+      height: 100%;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 2px solid transparent;
+      
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(255, 171, 38, 0.2);
+        border-color: rgba(255, 171, 38, 0.3);
+      }
+
+      .recent-group-content {
+        padding: $spacing-xl;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .recent-group-icon {
+        margin-bottom: $spacing-md;
+        
+        .v-icon {
+          color: $grace-orange !important;
+        }
+      }
+
+      .recent-group-name {
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+        color: $text-secondary;
+        margin-bottom: $spacing-sm;
+        text-align: center;
+        word-break: break-word;
+      }
+
+      .recent-group-description {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        margin-bottom: $spacing-md;
+        text-align: center;
+      }
+
+      .recent-group-meta {
+        margin-top: auto;
+        
+        .recent-group-date {
+          font-size: $font-size-xs;
+          color: $text-tertiary;
+          font-style: italic;
+        }
+      }
+    }
+  }
+
   // ユースケースセクション
   .usecases-section {
     padding: $spacing-xxl 0;
@@ -125,6 +427,9 @@
       font-weight: $font-weight-bold;
       color: $text-secondary;
       margin-bottom: $spacing-xxl;
+      // GSAPアニメーション用の初期状態
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     .tags-container {
@@ -138,6 +443,10 @@
         color: $grace-orange !important;
         font-weight: $font-weight-medium;
         transition: $transition-normal;
+        // GSAPアニメーション用の初期状態
+        opacity: 0;
+        transform: translateY(30px) rotate(5deg);
+        will-change: transform;
 
         &:hover {
           background: $grace-orange !important;
@@ -157,6 +466,9 @@
       font-weight: $font-weight-bold;
       color: $text-secondary;
       margin-bottom: $spacing-md;
+      // GSAPアニメーション用の初期状態
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     .howto-subtitle {
@@ -171,6 +483,10 @@
       transition: $transition-normal;
       border-radius: $border-radius-lg;
       overflow: hidden;
+      // GSAPアニメーション用の初期状態
+      opacity: 0;
+      transform: translateX(-50px) rotateY(15deg);
+      will-change: transform;
 
       &:hover {
         transform: translateY(-4px);
@@ -193,6 +509,9 @@
         font-size: $font-size-lg;
         font-weight: $font-weight-bold;
         margin: 0 auto $spacing-lg;
+        // GSAPアニメーション用の初期状態
+        transform: scale(0) rotate(180deg);
+        will-change: transform;
       }
 
       .howto-title {
@@ -208,6 +527,8 @@
 
         .v-icon {
           color: $grace-orange !important;
+          // フロートアニメーション用
+          will-change: transform;
         }
       }
 
@@ -227,6 +548,10 @@
       border-radius: $border-radius-lg;
       box-shadow: $shadow-md;
       transition: $transition-normal;
+      // GSAPアニメーション用の初期状態（hero-buttonと同じレベルに調整）
+      opacity: 0;
+      transform: translateY(50px);
+      will-change: transform;
 
       &:hover {
         transform: translateY(-2px);
@@ -296,7 +621,8 @@
 @media (max-width: $breakpoint-md) {
   .service-intro {
     .hero-section {
-      padding-top: 8px;
+      // モバイルでのヘッダー高さ調整（メインのセクションで既に設定済みなので削除）
+      
       .hero-title {
         font-size: $font-size-xl;
       }

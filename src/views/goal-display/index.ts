@@ -2,8 +2,10 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import type { Goal, CreateGoalRequest } from '@/types'
 import { getSpaceInfo, updateSpace } from '@/api/spaces'
-import type { UpdateSpaceRequest } from '@/api/types'
 import { getGoalList, createGoal, updateGoalStatus } from '@/api/goals'
+import { addRecentGroup } from '@/utils/localStorage'
+import type { UpdateSpaceRequest } from '@/api/types'
+import { useSwipeGesture } from '@/utils/useSwipeGesture'
 
 export const useGoalDisplay = () => {
   const route = useRoute()
@@ -11,7 +13,7 @@ export const useGoalDisplay = () => {
   // 状態管理
   const isAddingGoal = ref(false)
   const isEditingSpace = ref(false)
-  const sortOrder = ref('createdAt')
+  const sortOrder = ref('dueDate')
   const filters = reactive({
     assignee: '',
     status: 'all'
@@ -53,6 +55,111 @@ export const useGoalDisplay = () => {
   const totalGoals = ref(0)
   const completedGoals = ref(0)
   const progressPercentage = ref(0)
+
+  // スワイプアニメーション状態
+  const swipeAnimations = ref<Map<string, string>>(new Map())
+
+  // スワイプ機能用のヘルパー
+  const createSwipeHandler = (goal: Goal) => {
+    return useSwipeGesture({
+      threshold: 40, // iPhone用により小さな閾値
+      maxDistance: 100, // iPhone用により小さな最大距離
+      onSwipeLeft: () => {
+        // 左スワイプ：TODOに戻す（完了済みの場合のみ）
+        if (goal.isCompleted) {
+          performSwipeAction(goal, false, 'left')
+        }
+      },
+      onSwipeRight: () => {
+        // 右スワイプ：完了にする（未完了の場合のみ）
+        if (!goal.isCompleted) {
+          performSwipeAction(goal, true, 'right')
+        }
+      },
+      onSwipeProgress: (progress: number, direction: 'left' | 'right' | 'none') => {
+        // スワイプ中の視覚的フィードバック
+        updateSwipeVisuals(goal.id, progress, direction)
+      },
+      onSwipeEnd: () => {
+        // スワイプ終了時の状態リセット
+        resetSwipeVisuals(goal.id)
+      }
+    })
+  }
+
+  const performSwipeAction = async (goal: Goal, newStatus: boolean, direction: 'left' | 'right') => {
+    // アニメーションクラスを追加
+    swipeAnimations.value.set(goal.id, `swipe-complete-${direction}`)
+    
+    // 少し待ってからステータス更新
+    setTimeout(async () => {
+      await toggleGoalStatus(goal)
+      
+      // アニメーション完了後にクラスを削除
+      setTimeout(() => {
+        swipeAnimations.value.delete(goal.id)
+      }, 600)
+    }, 100)
+  }
+
+  const updateSwipeVisuals = (goalId: string, progress: number, direction: 'left' | 'right' | 'none') => {
+    const goalElement = document.querySelector(`[data-goal-id="${goalId}"]`)
+    if (!goalElement) return
+
+    const content = goalElement.querySelector('.goal-content') as HTMLElement
+    const backgroundLeft = goalElement.querySelector('.swipe-background.swipe-left') as HTMLElement
+    const backgroundRight = goalElement.querySelector('.swipe-background.swipe-right') as HTMLElement
+
+    if (direction === 'right' && backgroundRight) {
+      // 右スワイプ（完了）- より小さな移動でもフィードバック
+      backgroundRight.style.opacity = (progress * 0.95).toString()
+      if (progress > 0.2) { // より低い閾値でアクティブに
+        backgroundRight.classList.add('active')
+      } else {
+        backgroundRight.classList.remove('active')
+      }
+      content.style.transform = `translateX(${progress * 30}px)` // より小さな移動距離
+    } else if (direction === 'left' && backgroundLeft) {
+      // 左スワイプ（未完了）- より小さな移動でもフィードバック
+      backgroundLeft.style.opacity = (progress * 0.95).toString()
+      if (progress > 0.2) { // より低い閾値でアクティブに
+        backgroundLeft.classList.add('active')
+      } else {
+        backgroundLeft.classList.remove('active')
+      }
+      content.style.transform = `translateX(-${progress * 30}px)` // より小さな移動距離
+    }
+
+    // スワイプ中のクラス追加
+    if (progress > 0) {
+      content.classList.add('swiping')
+    } else {
+      content.classList.remove('swiping')
+    }
+  }
+
+  const resetSwipeVisuals = (goalId: string) => {
+    const goalElement = document.querySelector(`[data-goal-id="${goalId}"]`)
+    if (!goalElement) return
+
+    const content = goalElement.querySelector('.goal-content') as HTMLElement
+    const backgroundLeft = goalElement.querySelector('.swipe-background.swipe-left') as HTMLElement
+    const backgroundRight = goalElement.querySelector('.swipe-background.swipe-right') as HTMLElement
+
+    // 全ての状態をリセット
+    content.style.transform = ''
+    content.classList.remove('swiping')
+    
+    if (backgroundLeft) {
+      backgroundLeft.style.opacity = '0'
+      backgroundLeft.classList.remove('active')
+    }
+    
+    if (backgroundRight) {
+      backgroundRight.style.opacity = '0'
+      backgroundRight.classList.remove('active')
+    }
+  }
 
   // 計算プロパティ
   const assigneeOptions = computed(() => {
@@ -116,6 +223,15 @@ export const useGoalDisplay = () => {
       
       // メンバー情報を保存（nicknameのみ）
       members.value = spaceInfo.members.map((member: any) => member.nickname || member.name || member)
+      
+      // LocalStorageに最近のグループとして保存
+      addRecentGroup({
+        id: spaceId.value,
+        name: spaceInfo.space.title,
+        description: `メンバー数: ${spaceInfo.members.length}人`,
+        memberCount: spaceInfo.members.length,
+        linkId: route.params.linkId as string
+      })
       
     } catch (err) {
       console.error('スペース情報の取得に失敗:', err)
@@ -208,6 +324,12 @@ export const useGoalDisplay = () => {
     }
   }
 
+  // リロードボタン用：目標一覧を再取得
+  const refreshGoals = async () => {
+    console.log('リロードボタンが押されました - 目標一覧を再取得します')
+    await fetchGoals()
+  }
+
   // メソッド
   const toggleGoalStatus = async (goal: Goal) => {
     console.log('toggleGoalStatus called with goal:', {
@@ -216,10 +338,10 @@ export const useGoalDisplay = () => {
       isCompleted: goal.isCompleted
     })
     
-    // IDが存在しない場合はエラーを出して処理を停止
-    if (!goal.id) {
-      console.error('Goal ID is missing:', goal)
-      error.value = '目標のIDが見つかりません。データの読み込みに問題があります。'
+    // temp_idの場合は処理を停止
+    if (!goal.id || goal.id.toString().startsWith('temp_')) {
+      console.warn('一時的なIDの目標はステータス更新できません:', goal)
+      error.value = '作成中の目標です。しばらくお待ちください。'
       return
     }
     
@@ -412,30 +534,14 @@ export const useGoalDisplay = () => {
       clearNewGoal()
       isAddingGoal.value = false
 
-      // バックグラウンドでAPIに送信し、成功時に実際のデータで置き換え
+      // バックグラウンドでAPIに送信し、成功時に一覧を再取得
       try {
         const result = await createGoal(spaceId.value, goalData)
-        
-        // 成功時：一時的な目標を実際のデータで置き換え
-        const index = goals.value.findIndex(g => g.id === tempId)
-        if (index !== -1) {
-          goals.value[index] = {
-            id: result.task_id || tempId,
-            title: result.goal?.title || goalData.title,
-            description: result.goal?.detail || goalData.detail,
-            assignee: result.goal?.assignee || goalData.assignee,
-            dueDate: result.goal?.due_on || goalData.due_on,
-            isCompleted: result.goal?.status === 'done' || false,
-            createdAt: result.goal?.created_at || currentTime,
-            updatedAt: result.goal?.updated_at || currentTime,
-            comments: [],
-            reactions: [],
-            showDetails: false,
-            newComment: ''
-          }
-        }
-        
         console.log('目標を作成しました:', result)
+        
+        // 成功時：temp_idを避けるため一覧を再取得
+        await fetchGoals()
+        
       } catch (apiError) {
         console.error('目標の作成に失敗:', apiError)
         
@@ -637,7 +743,12 @@ export const useGoalDisplay = () => {
     
     // 再取得メソッド
     fetchGoals,
-    fetchSpaceInfo
+    fetchSpaceInfo,
+    refreshGoals,
+    
+    // スワイプ関連
+    createSwipeHandler,
+    swipeAnimations
   }
 }
 

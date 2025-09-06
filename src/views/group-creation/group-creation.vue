@@ -1,15 +1,7 @@
 <template>
   <div class="group-creation">
     <!-- ヘッダー -->
-    <v-app-bar color="primary" dark elevation="0" class="header">
-      <v-container class="header-container">
-        <v-row align="center">
-          <v-col cols="12" class="text-center">
-            <h1 class="app-title">Taskel</h1>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-app-bar>
+    <AppHeader :onNavigate="navigateToServiceIntro" :skipAnimation="true" />
 
     <!-- メインコンテンツ -->
     <v-main class="main-content">
@@ -23,10 +15,14 @@
             <v-form @submit.prevent="handleSubmit" class="creation-form">
               <div class="form-field">
                 <label class="field-label">グループ名</label>
-                <v-text-field
+                <v-textarea
                   v-model="formData.title"
                   placeholder="計画2025"
-                  variant="outlined"
+                  variant="filled"
+                  density="compact"
+                  :rows="1"
+                  auto-grow
+                  hide-details
                   class="input-field"
                 />
               </div>
@@ -34,10 +30,14 @@
               <div class="form-field">
                 <label class="field-label">メンバー名</label>
                 <div class="member-input-container">
-                  <v-text-field
+                  <v-textarea
                     v-model="currentMemberInput"
                     placeholder="田中太郎"
-                    variant="outlined"
+                    variant="filled"
+                    density="compact"
+                    :rows="1"
+                    auto-grow
+                    hide-details
                     class="input-field member-input"
                   />
                   <v-btn
@@ -57,18 +57,16 @@
 
               <!-- 追加されたメンバー一覧 -->
               <div v-if="memberList.length > 0" class="member-list-container">
-                <label class="field-label">メンバー一覧</label>
                 <div class="member-list">
                   <div 
                     v-for="(member, index) in memberList" 
                     :key="index"
-                    class="member-item"
+                    class="member-tag"
                   >
-                    <span class="member-number">メンバー{{ index + 1 }}：</span>
                     <span class="member-name">{{ member }}</span>
                     <v-btn
                       icon="mdi-close"
-                      size="small"
+                      size="x-small"
                       variant="text"
                       color="error"
                       @click="removeMember(index)"
@@ -86,10 +84,14 @@
                   color="primary"
                   size="large"
                   :loading="loading"
+                  :disabled="!formData.title.trim() || memberList.length < 2"
                   class="submit-button"
                 >
                   グループを作成
                 </v-btn>
+                <div v-if="memberList.length < 2" class="validation-message">
+                  ※ グループには最低2人のメンバーが必要です
+                </div>
               </div>
             </v-form>
           </v-col>
@@ -147,7 +149,16 @@
 </template>
 
 <script setup lang="ts">
+import AppHeader from '@/components/AppHeader/AppHeader.vue'
+import { useRouter } from 'vue-router'
 import { useGroupCreation } from './index'
+
+const router = useRouter()
+
+// service-introページに戻る関数
+const navigateToServiceIntro = () => {
+  router.push('/')
+}
 
 const {
   loading,

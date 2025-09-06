@@ -16,11 +16,12 @@
     "stylelint": "stylelint \"**/*.{vue,scss,css}\" --fix"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "gsap": "^3.13.0",
+    "pinia": "^2.1.7",
     "vue": "^3.4.0",
     "vue-router": "^4.2.5",
-    "pinia": "^2.1.7",
-    "vuetify": "^3.4.0",
-    "@mdi/font": "^7.4.47"
+    "vuetify": "^3.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

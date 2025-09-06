@@ -1,66 +1,69 @@
 <template>
   <div class="goal-display">
-    <!-- ヘッダー -->
-    <v-app-bar 
-      color="primary" 
-      dark 
-      elevation="0" 
-      class="header" 
-      height="auto"
-      :extension-height="0"
-      flat
-      fixed
-      app
-    >
-      <template v-slot:default>
-        <v-container class="header-container" fluid>
-          <v-row align="center">
-            <v-col cols="12">
-              <div class="d-flex justify-space-between align-center">
-                <div>
-                  <h1 class="space-title">{{ spaceName || 'スペース名' }}</h1>
-                  <p v-if="spaceDescription" class="space-description">{{ spaceDescription }}</p>
-                </div>
+    <!-- 共通ヘッダー -->
+    <AppHeader :on-navigate="navigateToIntro" :skip-animation="true"/>
+
+    <!-- スペース情報 -->
+    <div class="space-info-section">
+      <v-container class="space-info-container" fluid>
+        <v-row align="center">
+          <v-col cols="12">
+            <div class="d-flex justify-space-between align-center">
+              <div>
+                <h1 class="space-title">{{ spaceName || '' }}</h1>
+                <p v-if="spaceDescription" class="space-description">{{ spaceDescription }}</p>
+              </div>
+              <div class="space-actions">
+                <v-btn
+                  icon="mdi-refresh"
+                  variant="text"
+                  color="primary"
+                  @click="refreshGoals"
+                  class="refresh-button"
+                  :loading="loading"
+                >
+                  <v-icon>mdi-refresh</v-icon>
+                </v-btn>
                 <v-btn
                   icon="mdi-cog"
                   variant="text"
-                  color="white"
+                  color="primary"
                   @click="startEditingSpace"
                   class="settings-button"
                 >
                   <v-icon>mdi-cog</v-icon>
                 </v-btn>
               </div>
-            </v-col>
-            <!-- 進捗情報を一時的にコメントアウト -->
-            <!--
-            <v-col cols="12" sm="12" md="4" lg="4" class="text-md-right text-center">
-              <div class="progress-info">
-                <div class="progress-circle">
-                  <v-progress-circular
-                    :model-value="progressPercentage"
-                    :size="$vuetify.display.xs ? 50 : $vuetify.display.sm ? 55 : 60"
-                    :width="$vuetify.display.xs ? 5 : 6"
-                    color="success"
-                    class="progress-indicator"
-                  >
-                    {{ progressPercentage }}%
-                  </v-progress-circular>
-                </div>
-                <div class="progress-text">
-                  <span class="progress-label">完了率</span>
-                  <span class="progress-value">{{ completedGoals }}/{{ totalGoals }}</span>
-                </div>
+            </div>
+          </v-col>
+          <!-- 進捗情報を一時的にコメントアウト -->
+          <!--
+          <v-col cols="12" sm="12" md="4" lg="4" class="text-md-right text-center">
+            <div class="progress-info">
+              <div class="progress-circle">
+                <v-progress-circular
+                  :model-value="progressPercentage"
+                  :size="$vuetify.display.xs ? 50 : $vuetify.display.sm ? 55 : 60"
+                  :width="$vuetify.display.xs ? 5 : 6"
+                  color="success"
+                  class="progress-indicator"
+                >
+                  {{ progressPercentage }}%
+                </v-progress-circular>
               </div>
-            </v-col>
-            -->
-          </v-row>
-        </v-container>
-      </template>
-    </v-app-bar>
+              <div class="progress-text">
+                <span class="progress-label">完了率</span>
+                <span class="progress-value">{{ completedGoals }}/{{ totalGoals }}</span>
+              </div>
+            </div>
+          </v-col>
+          -->
+        </v-row>
+      </v-container>
+    </div>
 
     <!-- メインコンテンツ -->
-    <v-main class="main-content">
+    <div class="main-content">
       <v-container class="content-container" fluid>
         <!-- ローディング状態 -->
         <div v-if="loading" class="loading-section">
@@ -109,46 +112,56 @@
         <div v-else>
           <!-- フィルタ・ソート -->
           <div class="filters-section">
+          <!-- 絞り込みセクション -->
           <v-row align="center">
-            <v-col cols="12" lg="8">
+            <v-col cols="12">
               <div class="filter-controls">
-                <v-select
-                  v-model="filters.assignee"
-                  :items="assigneeOptions"
-                  label="担当者で絞り込み"
-                  variant="outlined"
-                  density="compact"
-                  class="filter-select assignee-filter"
-                  clearable
-                  prepend-icon="mdi-account"
-                />
-                <v-select
-                  v-model="filters.status"
-                  :items="statusOptions"
-                  label="状態で絞り込み"
-                  variant="outlined"
-                  density="compact"
-                  class="filter-select status-filter"
-                  prepend-icon="mdi-check-circle"
-                />
+                <div class="filter-item">
+                  <label class="field-label mb-2">担当者で絞り込み</label>
+                  <v-select
+                    v-model="filters.assignee"
+                    :items="assigneeOptions"
+                    placeholder="全ての担当者"
+                    variant="filled"
+                    density="compact"
+                    class="filter-select assignee-filter"
+                    clearable
+                    prepend-icon="mdi-account"
+                  />
+                </div>
+                <div class="filter-item">
+                  <label class="field-label mb-2">状態で絞り込み</label>
+                  <v-select
+                    v-model="filters.status"
+                    :items="statusOptions"
+                    placeholder="全ての状態"
+                    variant="filled"
+                    density="compact"
+                    class="filter-select status-filter"
+                    prepend-icon="mdi-check-circle"
+                  />
+                </div>
               </div>
             </v-col>
-            <v-col cols="12" lg="4" class="text-lg-right text-center">
+          </v-row>
+          <!-- ソートセクション -->
+          <v-row>
+            <v-col cols="12" class="text-center">
               <v-btn-toggle
                 v-model="sortOrder"
                 color="primary"
                 class="sort-toggle"
                 density="compact"
               >
-                <v-btn value="createdAt" size="small">
-                  <v-icon class="mr-1">mdi-clock-outline</v-icon>
-                  <span class="d-none d-sm-inline">作成順</span>
-                  <span class="d-inline d-sm-none">作成順</span>
-                </v-btn>
                 <v-btn value="dueDate" size="small">
                   <v-icon class="mr-1">mdi-calendar-outline</v-icon>
                   <span class="d-none d-sm-inline">期限順</span>
                   <span class="d-inline d-sm-none">期限順</span>
+                </v-btn>
+                <v-btn value="createdAt" size="small">
+                  <v-icon class="mr-1">mdi-clock-outline</v-icon>
+                  <span class="d-none d-sm-inline">作成順</span>
+                  <span class="d-inline d-sm-none">作成順</span>
                 </v-btn>
                 <v-btn value="title" size="small">
                   <v-icon class="mr-1">mdi-text</v-icon>
@@ -208,33 +221,38 @@
                 <div class="goal-header">
                   <div class="goal-info">
                     <div class="goal-title-input mb-3">
-                      <v-text-field
+                      <label class="field-label mb-2">タイトル</label>
+                      <v-textarea
                         v-model="newGoal.title"
                         placeholder="新しい目標のタイトルを入力..."
-                        variant="plain"
+                        variant="filled"
                         density="compact"
+                        :rows="1"
                         class="title-input"
+                        auto-growz
                         hide-details
                       />
                     </div>
                     <v-row class="goal-meta">
                       <v-col cols="12" sm="6" class="goal-assignee-input">
+                        <label class="field-label mb-2">担当者</label>
                         <v-select
                           v-model="newGoal.assignee"
                           :items="assigneeOptions"
-                          label="担当者を選択"
-                          variant="outlined"
+                          placeholder="担当者を選択"
+                          variant="filled"
                           density="compact"
                           class="assignee-input"
                           hide-details
                         />
                       </v-col>
                       <v-col cols="12" sm="6" class="goal-due-date-input">
+                        <label class="field-label mb-2">期限日</label>
                         <v-text-field
                           v-model="newGoal.dueDate"
                           type="date"
-                          label="期限日"
-                          variant="outlined"
+                          placeholder="期限日を選択"
+                          variant="filled"
                           density="compact"
                           class="due-date-input"
                           hide-details
@@ -242,13 +260,14 @@
                       </v-col>
                     </v-row>
                     <div class="goal-description-input mt-3">
+                      <label class="field-label mb-2">詳細説明（任意）</label>
                       <v-textarea
                         v-model="newGoal.description"
-                        placeholder="詳細説明を入力... (任意)"
-                        variant="outlined"
+                        placeholder="詳細説明を入力..."
+                        variant="filled"
                         density="compact"
                         :rows="2"
-                        auto-grow
+                        auto-growz
                         class="description-input"
                         hide-details
                       />
@@ -281,11 +300,54 @@
             <v-card
               v-for="goal in filteredGoals"
               :key="goal.id"
-              class="goal-card"
-              :class="{ 'goal-completed': goal.isCompleted }"
+              class="goal-card swipeable-card"
+              :class="{ 
+                'goal-completed': goal.isCompleted,
+                [swipeAnimations.get(goal.id) || '']: swipeAnimations.has(goal.id)
+              }"
               elevation="1"
+              :data-goal-id="goal.id"
+              v-bind="createSwipeHandler(goal).getTouchEventHandlers()"
             >
+              <!-- スワイプ背景 -->
+              <div class="swipe-background swipe-left">
+                <div class="swipe-content">
+                  <v-icon size="40" color="white">mdi-undo-variant</v-icon>
+                  <div class="swipe-text">TODOに戻す</div>
+                </div>
+              </div>
+              <div class="swipe-background swipe-right">
+                <div class="swipe-content">
+                  <v-icon size="40" color="white">mdi-check-circle</v-icon>
+                  <div class="swipe-text">完了！</div>
+                </div>
+              </div>
+
               <v-card-text class="goal-content pa-3">
+                <!-- スワイプ状態バッジ -->
+                <div class="swipe-status-badge">
+                  <v-chip
+                    v-if="!goal.isCompleted"
+                    size="small"
+                    color="success"
+                    variant="outlined"
+                    class="swipe-hint-chip"
+                  >
+                    <v-icon size="14" start>mdi-chevron-right</v-icon>
+                    スワイプで完了
+                  </v-chip>
+                  <v-chip
+                    v-if="goal.isCompleted"
+                    size="small"
+                    color="warning"
+                    variant="outlined"
+                    class="swipe-hint-chip"
+                  >
+                    <v-icon size="14" start>mdi-chevron-left</v-icon>
+                    スワイプで戻す
+                  </v-chip>
+                </div>
+
                 <div class="goal-header">
                   <div class="goal-title-row">
                     <div class="goal-checkbox">
@@ -299,6 +361,7 @@
                       {{ goal.title }}
                     </h3>
                     <div class="goal-actions">
+                      <!-- 古いスワイプヒントを削除 -->
                       <!-- コメント・ハートアイコンは一旦コメントアウト
                       <v-btn
                         icon="mdi-comment-outline"
@@ -378,7 +441,7 @@
         </div>
         </div> <!-- 通常のコンテンツの終了 -->
       </v-container>
-    </v-main>
+    </div>
 
     <!-- スペース編集ダイアログ -->
     <v-dialog v-model="isEditingSpace" max-width="600">
@@ -394,8 +457,8 @@
               <label class="field-label">スペース名</label>
               <v-text-field
                 v-model="editSpaceData.title"
-                placeholder="スペース名を入力..."
-                variant="outlined"
+                placeholder="スペース名を入力"
+                variant="filled"
                 class="input-field"
                 :rules="[rules.required]"
               />
@@ -406,8 +469,8 @@
               <div class="member-input-container">
                 <v-text-field
                   v-model="currentEditMemberInput"
-                  placeholder="メンバー名を入力..."
-                  variant="outlined"
+                  placeholder="メンバー名を入力"
+                  variant="filled"
                   class="input-field member-input"
                   @keyup.enter="addEditMember"
                 />
@@ -508,6 +571,14 @@
 
 <script setup lang="ts">
 import { useGoalDisplay } from './index'
+import { useRouter } from 'vue-router'
+import AppHeader from '../../components/AppHeader/AppHeader.vue'
+
+const router = useRouter()
+// service-introページに戻る関数
+const navigateToIntro = () => {
+  router.push('/')
+}
 
 const {
   // 状態
@@ -548,7 +619,12 @@ const {
   
   // 再取得メソッド
   fetchGoals,
-  fetchSpaceInfo
+  fetchSpaceInfo,
+  refreshGoals,
+  
+  // スワイプ関連
+  createSwipeHandler,
+  swipeAnimations
 } = useGoalDisplay()
 </script>
 
