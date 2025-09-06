@@ -20,8 +20,9 @@
     },
     {
       "src": "/icon.png",
-      "sizes": "408x408",
-      "type": "image/png"
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "theme_color": "#ffffff",
