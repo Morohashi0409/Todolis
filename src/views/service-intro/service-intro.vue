@@ -8,6 +8,9 @@
       <v-container class="hero-container">
         <v-row justify="center" align="center" class="hero-content">
           <v-col cols="12" md="8" class="text-center">
+            <div class="hero-image-container">
+              <img src="/src/assets/hero.png" alt="Taskel" class="hero-image" />
+            </div>
             <h1 class="hero-title">
               続ける力を、シェアしよう
             </h1>
@@ -402,13 +405,14 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
   }
   
   // ヒーローセクションのアニメーション
+  const heroImage = document.querySelector('.hero-image')
   const heroTitle = document.querySelector('.hero-title')
   const heroSubtitle = document.querySelector('.hero-subtitle')
   const heroButton = document.querySelector('.hero-button')
   
-  if (heroTitle && heroSubtitle && heroButton) {
+  if (heroImage && heroTitle && heroSubtitle && heroButton) {
     // 初期状態を設定
-    gsap.set([heroTitle, heroSubtitle, heroButton], {
+    gsap.set([heroImage, heroTitle, heroSubtitle, heroButton], {
       opacity: 0,
       y: 50
     })
@@ -417,12 +421,19 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
     const heroTl = gsap.timeline({ delay: 0.8 }) // ヘッダーアニメーション後に開始
     
     heroTl
+      .to(heroImage, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 1.2,
+        ease: "back.out(1.7)"
+      })
       .to(heroTitle, {
         opacity: 1,
         y: 0,
         duration: 1.2,
         ease: "power3.out"
-      })
+      }, "-=0.8")
       .to(heroSubtitle, {
         opacity: 1,
         y: 0,
