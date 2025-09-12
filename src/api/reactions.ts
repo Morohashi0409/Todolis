@@ -1,6 +1,6 @@
 // リアクション関連のAPI接続機能
 
-import { apiClient, buildQueryParams, validateResponse } from './client'
+import { apiClient, validateResponse } from './client'
 import type {
   CreateReactionRequest,
   ReactionListResponse,

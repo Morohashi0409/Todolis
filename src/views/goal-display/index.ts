@@ -4,7 +4,7 @@ import type { Goal, CreateGoalRequest } from '@/types'
 import { getSpaceInfo, updateSpace } from '@/api/spaces'
 import { getGoalList, createGoal, updateGoalStatus } from '@/api/goals'
 import { addRecentGroup } from '@/utils/localStorage'
-import { getReactionList, addReaction } from '@/api/reactions'
+// import { getReactionList, addReaction } from '@/api/reactions'
 import type { UpdateSpaceRequest } from '@/api/types'
 import { useSwipeGesture } from '@/utils/useSwipeGesture'
 
