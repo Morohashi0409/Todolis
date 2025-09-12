@@ -460,7 +460,7 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
     
     ScrollTrigger.create({
       trigger: '.features-section',
-      start: 'top 80%',
+      start: 'top 100%',
       onEnter: () => {
         gsap.to(featureCards, {
           opacity: 1,
@@ -485,7 +485,7 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
     
     ScrollTrigger.create({
       trigger: '.usecases-section',
-      start: 'top 80%',
+      start: 'top 100%',
       onEnter: () => {
         gsap.to(usecaseTags, {
           opacity: 1,
@@ -543,7 +543,7 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
     
     ScrollTrigger.create({
       trigger: '.howto-section',
-      start: 'top 70%',
+      start: 'top 100%',
       onEnter: () => {
         // カードのアニメーション
         gsap.to(howtoCards, {
@@ -573,7 +573,7 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
   if (ctaButton) {
     ScrollTrigger.create({
       trigger: ctaButton,
-      start: 'top 90%',
+      start: 'top 100%',
       onEnter: () => {
         gsap.fromTo(ctaButton, {
           opacity: 0,
@@ -612,7 +612,7 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
     
     ScrollTrigger.create({
       trigger: title,
-      start: 'top 85%',
+      start: 'top 100%',
       onEnter: () => {
         gsap.to(title, {
           opacity: 1,
@@ -629,7 +629,7 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
   featureIcons.forEach(icon => {
     ScrollTrigger.create({
       trigger: icon,
-      start: 'top 80%',
+      start: 'top 100%',
       onEnter: () => {
         gsap.fromTo(icon, {
           rotation: -180,
