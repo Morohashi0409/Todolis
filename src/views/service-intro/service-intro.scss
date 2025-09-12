@@ -95,7 +95,7 @@
       0 2px 16px rgba(255, 171, 38, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
     
-    // グラデーションアニメーション
+    // グラデーションアニメーション（軽量化: モバイルは停止）
     animation: gradientShift 8s ease infinite,
                headerGlow 4s ease-in-out infinite alternate;
     
@@ -620,6 +620,13 @@
 // レスポンシブ対応
 @media (max-width: $breakpoint-md) {
   .service-intro {
+    .header {
+      // モバイルで負荷の高い効果を抑制
+      animation: none !important;
+      backdrop-filter: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
     .hero-section {
       // モバイルでのヘッダー高さ調整（メインのセクションで既に設定済みなので削除）
       
@@ -650,6 +657,16 @@
       .howto-card {
         margin-bottom: $spacing-lg;
       }
+    }
+  }
+}
+
+// アクセシビリティ: reduced motion ではアニメーション無効化
+@media (prefers-reduced-motion: reduce) {
+  .service-intro {
+    * {
+      animation: none !important;
+      transition: none !important;
     }
   }
 }

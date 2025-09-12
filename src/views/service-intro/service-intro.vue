@@ -281,7 +281,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import AppHeader from '@/components/AppHeader/AppHeader.vue'
@@ -342,7 +342,17 @@ const formatLastVisited = (date: Date) => {
 }
 
 // アニメーション関数
-const initAnimations = () => {
+const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean }) => {
+  const reducedMotion = options?.reducedMotion ?? false
+  const isMobile = options?.isMobile ?? false
+
+  // GSAP/ScrollTrigger のデフォルトを軽量設定
+  ScrollTrigger.defaults({ once: true })
+
+  // reduced-motion の場合は重いアニメーションをスキップ
+  if (reducedMotion) {
+    return
+  }
   // ヘッダーのアニメーション
   const headerTitle = document.querySelector('.app-title')
   const headerLogo = document.querySelector('.header-logo')
@@ -426,15 +436,17 @@ const initAnimations = () => {
         ease: "back.out(1.7)"
       }, "-=0.5")
     
-    // ボタンのパルスアニメーション
-    gsap.to(heroButton, {
-      scale: 1.05,
-      duration: 2,
-      ease: "power2.inOut",
-      yoyo: true,
-      repeat: -1,
-      delay: 2
-    })
+    // モバイルは無限ループを避ける
+    if (!isMobile) {
+      gsap.to(heroButton, {
+        scale: 1.05,
+        duration: 2,
+        ease: "power2.inOut",
+        yoyo: true,
+        repeat: -1,
+        delay: 2
+      })
+    }
   }
   
   // 特徴カードのスタッガーアニメーション
@@ -487,26 +499,28 @@ const initAnimations = () => {
           }
         })
         
-        // タグのホバーアニメーション
-        usecaseTags.forEach(tag => {
-          tag.addEventListener('mouseenter', () => {
-            gsap.to(tag, {
-              scale: 1.1,
-              rotation: 2,
-              duration: 0.3,
-              ease: "power2.out"
+        // ホバー対応デバイスでのみイベントを登録
+        if (window.matchMedia('(hover: hover)').matches) {
+          usecaseTags.forEach(tag => {
+            tag.addEventListener('mouseenter', () => {
+              gsap.to(tag, {
+                scale: 1.1,
+                rotation: 2,
+                duration: 0.3,
+                ease: "power2.out"
+              })
+            })
+            
+            tag.addEventListener('mouseleave', () => {
+              gsap.to(tag, {
+                scale: 1,
+                rotation: 0,
+                duration: 0.3,
+                ease: "power2.out"
+              })
             })
           })
-          
-          tag.addEventListener('mouseleave', () => {
-            gsap.to(tag, {
-              scale: 1,
-              rotation: 0,
-              duration: 0.3,
-              ease: "power2.out"
-            })
-          })
-        })
+        }
       }
     })
   }
@@ -574,17 +588,19 @@ const initAnimations = () => {
     })
   }
   
-  // パララックス効果
-  gsap.to('.hero-section', {
-    yPercent: -50,
-    ease: "none",
-    scrollTrigger: {
-      trigger: '.hero-section',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: true
-    }
-  })
+  // パララックス効果（モバイルは無効）
+  if (!isMobile) {
+    gsap.to('.hero-section', {
+      yPercent: -50,
+      ease: "none",
+      scrollTrigger: {
+        trigger: '.hero-section',
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true
+      }
+    })
+  }
   
   // セクションタイトルのアニメーション
   const sectionTitles = document.querySelectorAll('.section-title')
@@ -628,42 +644,46 @@ const initAnimations = () => {
     })
   })
   
-  // フロートアニメーション
-  gsap.to('.feature-icon', {
-    y: -10,
-    duration: 3,
-    ease: "power2.inOut",
-    yoyo: true,
-    repeat: -1,
-    stagger: 0.5
-  })
+  // フロートアニメーション（モバイルはスキップ）
+  if (!isMobile) {
+    gsap.to('.feature-icon', {
+      y: -10,
+      duration: 3,
+      ease: "power2.inOut",
+      yoyo: true,
+      repeat: -1,
+      stagger: 0.5
+    })
+    
+    gsap.to('.howto-image .v-icon', {
+      y: -5,
+      rotation: 5,
+      duration: 4,
+      ease: "power2.inOut",
+      yoyo: true,
+      repeat: -1,
+      stagger: 0.8
+    })
+  }
   
-  gsap.to('.howto-image .v-icon', {
-    y: -5,
-    rotation: 5,
-    duration: 4,
-    ease: "power2.inOut",
-    yoyo: true,
-    repeat: -1,
-    stagger: 0.8
-  })
-  
-  // ヘッダーのスクロール効果
+  // ヘッダーのスクロール効果（モバイルでは軽減）
   const headerElement = document.querySelector('.header')
   if (headerElement) {
-    ScrollTrigger.create({
-      trigger: 'body',
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate: (self: any) => {
-        const progress = self.progress
-        // スクロールに応じてヘッダーのブラー効果を変更
-        gsap.to(headerElement, {
-          backdropFilter: `blur(${10 + progress * 10}px)`,
-          duration: 0.3
-        })
-      }
-    })
+    if (!isMobile) {
+      ScrollTrigger.create({
+        trigger: 'body',
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self: any) => {
+          const progress = self.progress
+          // スクロールに応じてヘッダーのブラー効果を変更
+          gsap.to(headerElement, {
+            backdropFilter: `blur(${10 + progress * 10}px)`,
+            duration: 0.3
+          })
+        }
+      })
+    }
     
     // スクロール時のヘッダー影効果
     ScrollTrigger.create({
@@ -689,10 +709,19 @@ onMounted(() => {
   // 最近のグループを読み込み
   recentGroups.value = getRecentGroups()
   
-  // DOMが完全に読み込まれた後にアニメーションを初期化
-  setTimeout(() => {
-    initAnimations()
-  }, 100)
+  // 環境検出
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+
+  // DOMが完全に読み込まれた後にアニメーションを初期化（より安全に遅延）
+  const start = () => initAnimations({ reducedMotion, isMobile })
+  if ('requestIdleCallback' in window && !reducedMotion) {
+    ;(window as any).requestIdleCallback(() => nextTick().then(start))
+  } else {
+    setTimeout(() => {
+      nextTick().then(start)
+    }, 50)
+  }
 })
 
 onUnmounted(() => {
