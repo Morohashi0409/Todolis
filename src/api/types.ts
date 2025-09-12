@@ -104,13 +104,12 @@ export interface CommentListResponse {
 export interface Reaction {
   id: string
   goal_id: string
-  author: string
+  author?: string
   emoji: string
   created_at: string
 }
 
 export interface CreateReactionRequest {
-  author: string
   emoji: string
 }
 

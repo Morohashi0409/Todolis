@@ -4,6 +4,7 @@ import type { Goal, CreateGoalRequest } from '@/types'
 import { getSpaceInfo, updateSpace } from '@/api/spaces'
 import { getGoalList, createGoal, updateGoalStatus } from '@/api/goals'
 import { addRecentGroup } from '@/utils/localStorage'
+import { getReactionList, addReaction } from '@/api/reactions'
 import type { UpdateSpaceRequest } from '@/api/types'
 import { useSwipeGesture } from '@/utils/useSwipeGesture'
 
@@ -58,6 +59,134 @@ export const useGoalDisplay = () => {
 
   // スワイプアニメーション状態
   const swipeAnimations = ref<Map<string, string>>(new Map())
+  // 提供するリアクション（5種） - 一時的にコメントアウト
+  // const REACTION_EMOJIS = ['👍', '❤️', '👏', '🎉', '🔥']
+
+  // const getReactionCountFor = (goal: Goal, emoji: string): number => {
+  //   const list = (goal as any).reactions || []
+  //   return list.filter((r: any) => r.emoji === emoji).length
+  // }
+
+  // const fetchReactionsForGoal = async (goal: Goal) => {
+  //   try {
+  //     const res = await getReactionList(goal.id)
+  //     ;(goal as any).reactions = res.reactions || []
+  //   } catch (err) {
+  //     // 反応取得は致命的でないため握りつぶす
+  //     ;(goal as any).reactions = []
+  //   }
+  // }
+
+  // const reactToGoal = async (goal: Goal, emoji: string) => {
+  //   try {
+  //     await addReaction(goal.id, emoji)
+  //     await fetchReactionsForGoal(goal)
+  //   } catch (err) {
+  //     console.error('リアクション送信に失敗:', err)
+  //   }
+  // }
+
+  // 長押しピッカー用の状態とハンドラ - 一時的にコメントアウト
+  // const reactionPickerVisible = ref(false)
+  // const reactionPickerX = ref(0)
+  // const reactionPickerY = ref(0)
+  // const reactionPickerGoalId = ref<string | null>(null)
+  // let longPressTimer: number | undefined
+  // const longPressFired = ref(false)
+
+  // const openReactionPicker = (goal: Goal, x: number, y: number) => {
+  //   console.log('openReactionPicker called:', { goal: goal.title, x, y })
+  //   reactionPickerGoalId.value = goal.id
+  //   reactionPickerX.value = x
+  //   reactionPickerY.value = y
+  //   reactionPickerVisible.value = true
+  //   longPressFired.value = true
+  //   console.log('reactionPickerVisible set to:', reactionPickerVisible.value)
+    
+  //   // ピッカーが表示された後の実際の位置を確認
+  //   setTimeout(() => {
+  //     const pickerElement = document.querySelector('.reaction-picker') as HTMLElement
+  //     if (pickerElement) {
+  //       const pickerRect = pickerElement.getBoundingClientRect()
+  //       console.log('Actual picker position:', {
+  //         top: pickerRect.top,
+  //         left: pickerRect.left,
+  //         bottom: pickerRect.bottom,
+  //         right: pickerRect.right,
+  //         width: pickerRect.width,
+  //         height: pickerRect.height
+  //       })
+  //     }
+  //   }, 100)
+  // }
+
+  // const closeReactionPicker = () => {
+  //   reactionPickerVisible.value = false
+  //   reactionPickerGoalId.value = null
+  // }
+
+  // const startLongPress = (goal: Goal, evt: MouseEvent | TouchEvent) => {
+  //   clearTimeout(longPressTimer as any)
+  //   longPressFired.value = false
+  //   const getPoint = () => {
+  //     if ('touches' in evt && evt.touches && evt.touches[0]) {
+  //       return { x: evt.touches[0].clientX, y: evt.touches[0].clientY }
+  //     }
+  //     const me = evt as MouseEvent
+  //     return { x: me.clientX, y: me.clientY }
+  //   }
+  //   const { x, y } = getPoint()
+  //   longPressTimer = window.setTimeout(() => openReactionPicker(goal, x, y), 450)
+  // }
+
+  // const cancelLongPress = () => {
+  //   // 長押しがまだ発火していない場合のみキャンセル
+  //   if (!longPressFired.value) {
+  //     clearTimeout(longPressTimer as any)
+  //   }
+  // }
+
+  // const chooseReactionFromPicker = async (emoji: string) => {
+  //   try {
+  //     const goal = goals.value.find(g => g.id === reactionPickerGoalId.value)
+  //     if (!goal) return
+  //     await reactToGoal(goal, emoji)
+  //   } finally {
+  //     closeReactionPicker()
+  //   }
+  // }
+
+  // タップ/クリックで即ピッカーを表示（目標カードの上に表示） - 一時的にコメントアウト
+  // const handleCardClick = (goal: Goal, evt: MouseEvent | TouchEvent) => {
+  //   console.log('handleCardClick called:', { goal: goal.title, eventType: evt.type })
+    
+  //   // 目標カードの要素を取得
+  //   const goalCard = (evt.target as HTMLElement).closest('.goal-card') as HTMLElement
+  //   console.log('goalCard found:', goalCard)
+    
+  //   if (!goalCard) {
+  //     console.log('goalCard not found, returning')
+  //     return
+  //   }
+    
+  //   // 目標カードの位置を取得
+  //   const rect = goalCard.getBoundingClientRect()
+  //   console.log('getBoundingClientRect():', {
+  //     top: rect.top,
+  //     left: rect.left,
+  //     bottom: rect.bottom,
+  //     right: rect.right,
+  //     width: rect.width,
+  //     height: rect.height
+  //   })
+    
+  //   const x = rect.left + rect.width / 2 // カードの中央
+  //   const y = rect.top - 30 // カードの上端から30px上に設定（ピッカーの高さ分を考慮）
+    
+  //   console.log('Opening reaction picker at:', { x, y })
+  //   openReactionPicker(goal, x, y)
+  // }
+
 
   // スワイプ機能用のヘルパー
   const createSwipeHandler = (goal: Goal) => {
@@ -306,6 +435,11 @@ export const useGoalDisplay = () => {
       }
 
       goals.value = allGoals
+
+      // 各ゴールのリアクションを並列取得 - 一時的にコメントアウト
+      // try {
+      //   await Promise.all(goals.value.map(g => fetchReactionsForGoal(g)))
+      // } catch (_) {}
     } catch (err: any) {
       console.error('目標一覧の取得に失敗:', err)
       
@@ -749,6 +883,23 @@ export const useGoalDisplay = () => {
     // スワイプ関連
     createSwipeHandler,
     swipeAnimations
+    // リアクション機能 - 一時的にコメントアウト
+    // ,
+    // REACTION_EMOJIS,
+    // getReactionCountFor,
+    // reactToGoal
+    // ,
+    // リアクションピッカー
+    // reactionPickerVisible,
+    // reactionPickerX,
+    // reactionPickerY,
+    // startLongPress,
+    // cancelLongPress,
+    // chooseReactionFromPicker
+    // ,
+    // closeReactionPicker
+    // ,
+    // handleCardClick
   }
 }
 

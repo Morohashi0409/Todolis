@@ -403,6 +403,8 @@ const initHeaderAnimation = () => {
   background-size: 200% 200%; // アニメーション用に大きくする
   position: fixed !important;
   top: 0;
+  // 固定ヘッダーの明示的な高さを指定（レイアウトの食い込み防止）
+  height: 64px;
   z-index: 1000;
   // ガラス効果
   backdrop-filter: blur(10px);
@@ -491,6 +493,19 @@ const initHeaderAnimation = () => {
         transform: scale(0.98); // クリック時のフィードバック
       }
     }
+  }
+}
+
+// レスポンシブ：端末別にヘッダー高さを調整
+@media (max-width: $breakpoint-md) {
+  .header {
+    height: 56px;
+  }
+}
+
+@media (max-width: $breakpoint-xs) {
+  .header {
+    height: 48px;
   }
 }
 </style>

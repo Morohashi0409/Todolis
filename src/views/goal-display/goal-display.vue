@@ -199,7 +199,9 @@
           <div v-else-if="filteredGoals.length > 0 || isAddingGoal" class="goals-list">
             <!-- TODO追加ボタン（目標がある場合） -->
             <v-card v-if="!isAddingGoal && filteredGoals.length > 0" class="goal-card add-goal-button-card" elevation="1">
-              <v-card-text class="goal-content pa-3">
+              <v-card-text
+                class="goal-content pa-3"
+              >
                 <div class="add-goal-button-content">
                   <v-btn
                     color="primary"
@@ -323,7 +325,9 @@
                 </div>
               </div>
 
-              <v-card-text class="goal-content pa-3">
+              <v-card-text 
+                class="goal-content pa-3"
+              >
                 <!-- スワイプ状態バッジ -->
                 <div class="swipe-status-badge">
                   <v-chip
@@ -435,6 +439,8 @@
                   </div>
                 </div>
                 -->
+
+                <!-- リアクション行（長押しでピッカーを表示するため常時非表示に変更） -->
               </v-card-text>
             </v-card>
           </div>
@@ -442,6 +448,26 @@
         </div> <!-- 通常のコンテンツの終了 -->
       </v-container>
     </div>
+
+    <!-- リアクションピッカー（オーバーレイ＋ツールチップ） - 一時的にコメントアウト -->
+    <!--
+    <div v-if="reactionPickerVisible" class="reaction-picker-overlay" @click="closeReactionPicker"></div>
+    <div
+      v-if="reactionPickerVisible"
+      class="reaction-picker"
+      :style="{ 
+        left: (reactionPickerX - 211) + 'px', 
+        top: reactionPickerY + 'px'
+      }"
+    >
+      <button
+        v-for="emoji in REACTION_EMOJIS"
+        :key="emoji"
+        class="reaction-picker-item"
+        @click.stop="chooseReactionFromPicker(emoji)"
+      >{{ emoji }}</button>
+    </div>
+    -->
 
     <!-- スペース編集ダイアログ -->
     <v-dialog v-model="isEditingSpace" max-width="600">
@@ -624,7 +650,20 @@ const {
   
   // スワイプ関連
   createSwipeHandler,
-  swipeAnimations
+  swipeAnimations,
+  // リアクション - 一時的にコメントアウト
+  // REACTION_EMOJIS,
+  // getReactionCountFor,
+  // reactToGoal,
+  // リアクションピッカー
+  // reactionPickerVisible,
+  // reactionPickerX,
+  // reactionPickerY,
+  // startLongPress,
+  // cancelLongPress,
+  // chooseReactionFromPicker,
+  // closeReactionPicker,
+  // handleCardClick
 } = useGoalDisplay()
 </script>
 

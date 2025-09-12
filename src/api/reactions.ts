@@ -12,17 +12,16 @@ import type {
  * GET /api/goals/{goal_id}/reactions
  */
 export async function getReactionList(
-  goalId: string,
-  viewToken: string
+  goalId: string
 ): Promise<ReactionListResponse> {
   try {
-    if (!viewToken) {
-      throw new Error('View token is required')
-    }
-
-    const queryParams = buildQueryParams({ view_token: viewToken })
-    const response = await apiClient.get<ReactionListResponse>(`/api/goals/${goalId}/reactions${queryParams}`)
-    return validateResponse(response)
+    const raw = await apiClient.get<any>(`/api/goals/${goalId}/reactions/get/`)
+    const parsed = validateResponse<any>(raw)
+    // APIが配列（[ ... ]）または { reactions: [...] } のどちらでも受け入れる
+    const reactions: Reaction[] = Array.isArray(parsed)
+      ? parsed
+      : (parsed?.reactions ?? [])
+    return { reactions }
   } catch (error) {
     console.error('Failed to get reaction list:', error)
     throw error
@@ -35,20 +34,26 @@ export async function getReactionList(
  */
 export async function createReaction(
   goalId: string,
-  editToken: string,
   data: CreateReactionRequest
 ): Promise<{ reaction: Reaction; message: string }> {
   try {
-    if (!editToken) {
-      throw new Error('Edit token is required')
+    // 1. 現行想定（typoを含む）
+    try {
+      const response = await apiClient.post<{ reaction: Reaction; message: string }>(
+        `/api/goals/${goalId}/reactions/add/`,
+        data
+      )
+      return validateResponse(response)
+    } catch (err: any) {
+      // 2. 404なら別名エンドポイントにフォールバック
+      const status = err?.response?.status
+      if (status !== 404) throw err
+      const fallback = await apiClient.post<{ reaction: Reaction; message: string }>(
+        `/api/goals/${goalId}/reactions/add/`,
+        data
+      )
+      return validateResponse(fallback)
     }
-
-    const queryParams = buildQueryParams({ edit_token: editToken })
-    const response = await apiClient.post<{ reaction: Reaction; message: string }>(
-      `/api/goals/${goalId}/reactions${queryParams}`,
-      data
-    )
-    return validateResponse(response)
   } catch (error) {
     console.error('Failed to create reaction:', error)
     throw error
@@ -61,11 +66,9 @@ export async function createReaction(
  */
 export async function addReaction(
   goalId: string,
-  editToken: string,
-  author: string,
   emoji: string
 ): Promise<{ reaction: Reaction; message: string }> {
-  return createReaction(goalId, editToken, { author, emoji })
+  return createReaction(goalId, { emoji })
 }
 
 /**
@@ -108,12 +111,6 @@ export function validateEmoji(emoji: string): boolean {
  * リアクションデータの検証
  */
 export function validateReactionData(data: CreateReactionRequest): boolean {
-  if (!data.author || data.author.trim().length === 0) {
-    return false
-  }
-  if (data.author.length > 50) {
-    return false
-  }
   if (!validateEmoji(data.emoji)) {
     return false
   }
@@ -123,15 +120,7 @@ export function validateReactionData(data: CreateReactionRequest): boolean {
 /**
  * リアクションの投稿者名の文字数制限チェック
  */
-export function checkReactionAuthorLength(author: string): { isValid: boolean; current: number; max: number } {
-  const maxLength = 50
-  const currentLength = author.length
-  return {
-    isValid: currentLength <= maxLength,
-    current: currentLength,
-    max: maxLength,
-  }
-}
+// authorはAPIから削除されるため未使用
 
 /**
  * 絵文字の文字数制限チェック

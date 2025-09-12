@@ -632,9 +632,111 @@
                     }
                   }
                 }
+
+                // リアクション行
+                .goal-reactions {
+                  margin-top: $spacing-sm;
+                  display: flex;
+                  align-items: center;
+                  justify-content: flex-end;
+
+                  .reaction-buttons {
+                    display: flex;
+                    gap: $spacing-xs;
+
+                    .reaction-btn {
+                      min-width: auto;
+                      padding: 4px 8px;
+                      border-radius: $border-radius-md;
+                      background: $background-secondary;
+
+                      &:hover {
+                        background: rgba($grace-orange, 0.12);
+                      }
+
+                      .emoji {
+                        font-size: 16px;
+                        line-height: 1;
+                      }
+
+                      .count {
+                        margin-left: 6px;
+                        font-size: 12px;
+                        color: $text-tertiary;
+                      }
+                    }
+                  }
+                }
               }
             }
           }
+// リアクションピッカー（ツールチップ風） - 一時的にコメントアウト
+/*
+.reaction-picker {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  background: white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-lg;
+  padding: 8px 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 2000;
+  border: 1px solid $border-color;
+  
+  // ツールチップの矢印を追加（下向き）
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid white;
+    z-index: 1;
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid $border-color;
+    z-index: 0;
+  }
+
+  .reaction-picker-item {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+    padding: 6px 8px;
+    border-radius: $border-radius-md;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $background-secondary;
+      transform: scale(1.1);
+    }
+  }
+}
+
+.reaction-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 1999;
+}
+*/
           
           &.goal-completed {
             opacity: 0.7;

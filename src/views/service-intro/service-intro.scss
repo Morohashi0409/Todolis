@@ -198,6 +198,9 @@
     color: white;
     position: relative;
     overflow: hidden;
+    // 角丸と左右のガターを追加
+    border-radius: 24px;
+    margin: 0 $spacing-lg;
     // ヘッダー分の余白を確保（固定ヘッダー対応）
     // Vuetifyのv-app-barの標準的な高さ + 安全マージン
     padding-top: calc(64px + 2rem); // デスクトップ用
@@ -209,14 +212,20 @@
 
     @media (max-width: $breakpoint-md) {
       padding-top: calc(56px + 1.5rem); // タブレット用（v-app-barがより小さくなる）
+      border-radius: 20px;
+      margin: 0 $spacing-md;
     }
 
     @media (max-width: $breakpoint-sm) {
       padding-top: calc(56px + 1rem); // スマートフォン用
+      border-radius: 16px;
+      margin: 0 $spacing-md;
     }
 
     @media (max-width: $breakpoint-xs) {
       padding-top: calc(48px + 1rem); // 極小画面用
+      border-radius: 12px;
+      margin: 0 $spacing-sm;
     }
 
     .hero-container {

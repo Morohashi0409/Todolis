@@ -195,7 +195,7 @@
                   <v-icon size="80" color="primary">mdi-share-variant</v-icon>
                 </div>
                 <p class="howto-description">
-                  グループページのURLをLINEなどでメンバーにシェアしましょう。「見るだけ用」と「編集可能用」の2種類のリンクで安心です。
+                  グループページのURLをLINEなどでメンバーにシェアしましょう。
                 </p>
               </v-card-text>
             </v-card>
