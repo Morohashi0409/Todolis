@@ -45,3 +45,26 @@ app.use(router)
 app.use(vuetify)
 
 app.mount('#app')
+
+// GA4: SPA ページビュー計測
+declare global {
+  interface Window { gtag?: (...args: any[]) => void }
+}
+
+router.afterEach((to) => {
+  // gtag が存在する場合のみ送信
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    // 推奨: page_view イベント
+    window.gtag('event', 'page_view', {
+      page_title: document.title,
+      page_location: window.location.href,
+      page_path: to.fullPath,
+    })
+
+    // 参考: 画面遷移カウント用途に screen_view も送信（GA4で集計可能）
+    window.gtag('event', 'screen_view', {
+      app_name: 'Taskel',
+      screen_name: to.name || to.fullPath,
+    })
+  }
+})
