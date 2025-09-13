@@ -589,6 +589,8 @@
 import { useGoalDisplay } from './index'
 import { useRouter } from 'vue-router'
 import AppHeader from '../../components/AppHeader/AppHeader.vue'
+import { useOGP } from '../../composables/useOGP'
+import { computed, watch } from 'vue'
 
 const router = useRouter()
 // service-introページに戻る関数
@@ -655,6 +657,33 @@ const {
   // closeReactionPicker,
   // handleCardClick
 } = useGoalDisplay()
+
+// OGP機能の設定
+const { updateOGP } = useOGP()
+
+// スペース情報に基づいてOGPタグを動的に更新
+const ogpTitle = computed(() => {
+  if (spaceName.value) {
+    return `${spaceName.value} - Taskel`
+  }
+  return 'Taskel - 続ける力を、シェアしよう'
+})
+
+const ogpDescription = computed(() => {
+  if (spaceDescription.value) {
+    return `${spaceDescription.value} - Taskelで目標を共有し、進捗を管理しましょう。`
+  }
+  return 'Taskelは、友達や家族と目標を共有し、進捗を管理できるアプリです。会員登録不要で、すぐに利用できます。'
+})
+
+// スペース情報が変更されたらOGPタグを更新
+watch([spaceName, spaceDescription], () => {
+  updateOGP({
+    title: ogpTitle.value,
+    description: ogpDescription.value,
+    url: window.location.href
+  })
+}, { immediate: true })
 </script>
 
 <style src="./goal-display.scss" lang="scss"></style>
