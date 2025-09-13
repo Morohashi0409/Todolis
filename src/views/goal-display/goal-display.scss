@@ -606,10 +606,10 @@
                     display: flex !important;
                     justify-content: center !important;
                     align-items: center !important;
-                    gap: $spacing-lg !important;
+                    gap: 32px !important; // 新規作成と同じ間隔（2rem相当）
                     flex-direction: row !important;
                   }
-                  
+                
                   .cancel-button {
                     color: $main-color !important;
                     border-color: $main-color !important;
@@ -665,6 +665,106 @@
                         color: $text-tertiary;
                       }
                     }
+                  }
+                }
+              }
+            }
+          }
+
+          // 編集フォーム用のスタイル
+          .goal-edit-form {
+            .goal-header {
+              .goal-info {
+                .goal-title-input {
+                  .field-label {
+                    font-size: $font-size-md;
+                    font-weight: $font-weight-bold;
+                  }
+                  .title-input {
+                    .v-field__input {
+                      font-size: 1.1rem !important;
+                      font-weight: $font-weight-bold !important;
+                      color: $text-secondary !important;
+                    }
+                  }
+                }
+                
+                .goal-meta {
+                  display: flex;
+                  gap: $spacing-md;
+                  margin-bottom: $spacing-sm;
+                  flex-wrap: wrap;
+                  
+                  &.v-row {
+                    margin: 0;
+                    
+                    .v-col {
+                      padding: $spacing-xs;
+                    }
+                  }
+                  
+                  .goal-assignee-input,
+                  .goal-due-date-input {
+                    flex: 1;
+                    min-width: 150px;
+                    padding-left: 0;
+                    
+                    .field-label {
+                      font-size: $font-size-md;
+                      font-weight: $font-weight-bold;
+                    }
+                    
+                    .v-field__input {
+                      font-size: 0.9rem;
+                      color: $text-secondary;
+                    }
+                  }
+                }
+                
+                .goal-description-input {
+                  .field-label {
+                    font-size: $font-size-md;
+                    font-weight: $font-weight-bold;
+                  }
+                  
+                  .description-input {
+                    .v-field__input {
+                      font-size: 0.9rem;
+                      color: $text-secondary;
+                      line-height: 1.5;
+                    }
+                  }
+                }
+              }
+              
+              .goal-actions {
+                .d-flex {
+                  display: flex !important;
+                  justify-content: center !important;
+                  align-items: center !important;
+                  gap: 32px !important; // 新規作成と同じ間隔（2rem相当）
+                  flex-direction: row !important;
+                }
+              
+                .cancel-button {
+                  color: $main-color !important;
+                  border-color: $main-color !important;
+                  width: 40px;
+                  height: 40px;
+                  flex-shrink: 0;
+                  
+                  &:hover {
+                    background-color: $main-color-alpha-10 !important;
+                  }
+                }
+                
+                .save-button {
+                  width: 40px;
+                  height: 40px;
+                  flex-shrink: 0;
+                  
+                  .v-icon {
+                    color: white !important;
                   }
                 }
               }
@@ -839,6 +939,24 @@
                     margin: 0;
                     line-height: 1.4;
                     font-size: 0.9rem;
+                    
+                    .goal-link {
+                      color: #4a90e2; // 優しい青色
+                      text-decoration: none;
+                      font-weight: $font-weight-medium;
+                      border-bottom: 1px solid transparent;
+                      transition: all 0.2s ease;
+                      
+                      &:hover {
+                        color: #357abd; // ホバー時は少し濃い青
+                        border-bottom-color: #357abd;
+                        text-decoration: none;
+                      }
+                      
+                      &:visited {
+                        color: #6ba3e8; // 訪問済みは少し明るい青
+                      }
+                    }
                   }
                 }
               }

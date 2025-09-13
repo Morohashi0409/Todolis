@@ -14,6 +14,7 @@ export const useGoalDisplay = () => {
   // 状態管理
   const isAddingGoal = ref(false)
   const isEditingSpace = ref(false)
+  const editingGoalId = ref<string | null>(null)
   const sortOrder = ref('dueDate')
   const filters = reactive({
     assignee: '',
@@ -26,6 +27,14 @@ export const useGoalDisplay = () => {
 
   // 新しい目標のフォーム
   const newGoal = reactive<CreateGoalRequest>({
+    title: '',
+    assignee: '',
+    dueDate: '',
+    description: ''
+  })
+
+  // 編集用の目標フォーム
+  const editGoalData = reactive<CreateGoalRequest>({
     title: '',
     assignee: '',
     dueDate: '',
@@ -446,8 +455,8 @@ export const useGoalDisplay = () => {
             assignee: task.assignee || '',
             dueDate: task.due_on || '',
             isCompleted: true,
-            createdAt: task.created_at,
-            updatedAt: task.updated_at,
+            createdAt: task.created_at || new Date().toISOString(),
+            updatedAt: task.updated_at || new Date().toISOString(),
             comments: [],
             reactions: [],
             showDetails: false,
@@ -467,8 +476,8 @@ export const useGoalDisplay = () => {
             assignee: task.assignee || '',
             dueDate: task.due_on || '',
             isCompleted: false,
-            createdAt: task.created_at,
-            updatedAt: task.updated_at,
+            createdAt: task.created_at || new Date().toISOString(),
+            updatedAt: task.updated_at || new Date().toISOString(),
             comments: [],
             reactions: [],
             showDetails: false,
@@ -747,6 +756,13 @@ export const useGoalDisplay = () => {
     newGoal.description = ''
   }
 
+  const clearEditGoal = () => {
+    editGoalData.title = ''
+    editGoalData.assignee = ''
+    editGoalData.dueDate = ''
+    editGoalData.description = ''
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ja-JP')
   }
@@ -767,6 +783,132 @@ export const useGoalDisplay = () => {
   const cancelAddingGoal = () => {
     isAddingGoal.value = false
     clearNewGoal()
+  }
+
+  // ゴール編集関連のメソッド
+  const startEditingGoal = (goal: Goal) => {
+    console.log('startEditingGoal called with goal:', {
+      id: goal.id,
+      title: goal.title,
+      assignee: goal.assignee,
+      dueDate: goal.dueDate,
+      description: goal.description
+    })
+    
+    editingGoalId.value = goal.id
+    editGoalData.title = goal.title
+    editGoalData.assignee = goal.assignee || ''
+    editGoalData.dueDate = goal.dueDate || ''
+    editGoalData.description = goal.description || ''
+    
+    console.log('editingGoalId set to:', editingGoalId.value)
+    console.log('editGoalData set to:', editGoalData)
+  }
+
+  const cancelEditingGoal = () => {
+    editingGoalId.value = null
+    clearEditGoal()
+  }
+
+  const saveGoalEdit = async () => {
+    try {
+      console.log('saveGoalEdit called, editingGoalId.value:', editingGoalId.value)
+      
+      if (!editingGoalId.value) {
+        console.error('editingGoalId.value is null or undefined')
+        return
+      }
+      
+      // ゴールIDを変数に保存（API呼び出し時に使用するため）
+      const goalId = editingGoalId.value
+      console.log('goalId saved as:', goalId)
+      
+      if (!editGoalData.title.trim()) {
+        error.value = 'タイトルは必須です'
+        return
+      }
+      if (!editGoalData.assignee?.trim()) {
+        error.value = '担当者は必須です'
+        return
+      }
+      if (!editGoalData.dueDate) {
+        error.value = '期限は必須です'
+        return
+      }
+
+      error.value = null
+
+      // 編集中のゴールを取得
+      const goal = goals.value.find(g => g.id === goalId)
+      if (!goal) {
+        error.value = '編集中のゴールが見つかりません'
+        return
+      }
+
+      // ローカルで即座に更新（UI応答性向上）
+      const oldTitle = goal.title
+      const oldAssignee = goal.assignee
+      const oldDueDate = goal.dueDate
+      const oldDescription = goal.description
+
+      goal.title = editGoalData.title.trim()
+      goal.assignee = editGoalData.assignee?.trim() || ''
+      goal.dueDate = editGoalData.dueDate
+      goal.description = editGoalData.description?.trim() || ''
+      goal.updatedAt = new Date().toISOString()
+
+      // バックグラウンドでAPIに送信
+      try {
+        // APIに送信するデータ形式に変換
+        const updateData = {
+          title: editGoalData.title.trim(),
+          detail: editGoalData.description?.trim() || '',
+          assignee: editGoalData.assignee?.trim() || '',
+          due_on: editGoalData.dueDate
+        }
+
+        console.log('ゴール更新API呼び出し:', {
+          goalId,
+          updateData,
+          goalStatus: goal.isCompleted ? 'done' : 'todo'
+        })
+
+        // 既存のupdateGoalStatusを拡張して内容更新に対応させる
+        const result = await updateGoalStatus(goalId, goal.isCompleted ? 'done' : 'todo', {
+          id: goal.id,
+          space_id: spaceId.value,
+          title: updateData.title,
+          detail: updateData.detail,
+          assignee: updateData.assignee,
+          due_on: updateData.due_on,
+          status: goal.isCompleted ? 'done' : 'todo',
+          order_index: 0,
+          created_at: goal.createdAt,
+          updated_at: goal.updatedAt
+        })
+        
+        console.log('ゴールの更新が成功しました:', result.message)
+        
+        // 成功後に編集モードを終了
+        cancelEditingGoal()
+        
+      } catch (apiError) {
+        console.error('ゴールの更新に失敗:', apiError)
+        
+        // API失敗時：ローカルの変更をロールバック
+        goal.title = oldTitle
+        goal.assignee = oldAssignee
+        goal.dueDate = oldDueDate
+        goal.description = oldDescription
+        goal.updatedAt = new Date().toISOString()
+        
+        error.value = 'ゴールの更新に失敗しました。再度お試しください。'
+        // 編集モードは維持（ユーザーが再試行できるように）
+      }
+    } catch (err) {
+      console.error('ゴールの更新処理に失敗:', err)
+      error.value = 'ゴールの更新処理に失敗しました'
+    }
   }
 
   // スペース編集関連のメソッド
@@ -871,9 +1013,11 @@ export const useGoalDisplay = () => {
     // 状態
     isAddingGoal,
     isEditingSpace,
+    editingGoalId,
     sortOrder,
     filters,
     newGoal,
+    editGoalData,
     rules,
     spaceName,
     spaceDescription,
@@ -907,6 +1051,11 @@ export const useGoalDisplay = () => {
     formatTime,
     startAddingGoal,
     cancelAddingGoal,
+    
+    // ゴール編集メソッド
+    startEditingGoal,
+    cancelEditingGoal,
+    saveGoalEdit,
     
     // スペース編集メソッド
     startEditingSpace,

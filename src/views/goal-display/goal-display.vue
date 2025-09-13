@@ -310,6 +310,7 @@
               elevation="1"
               :data-goal-id="goal.id"
               v-bind="createSwipeHandler(goal).getTouchEventHandlers()"
+              @click="handleGoalCardClick(goal, $event)"
             >
               <!-- スワイプ背景 -->
               <div class="swipe-background swipe-left">
@@ -328,77 +329,159 @@
               <v-card-text 
                 class="goal-content pa-3"
               >
-                <!-- スワイプ状態バッジ（モバイル版のみ表示） -->
-                <div v-if="isMobile" class="swipe-status-badge">
-                  <v-chip
-                    v-if="!goal.isCompleted"
-                    size="small"
-                    color="success"
-                    variant="outlined"
-                    class="swipe-hint-chip"
-                  >
-                    <v-icon size="14" start>mdi-chevron-right</v-icon>
-                    スワイプで完了
-                  </v-chip>
-                  <v-chip
-                    v-if="goal.isCompleted"
-                    size="small"
-                    color="warning"
-                    variant="outlined"
-                    class="swipe-hint-chip"
-                  >
-                    <v-icon size="14" start>mdi-chevron-left</v-icon>
-                    スワイプで戻す
-                  </v-chip>
-                </div>
-
-                <div class="goal-header">
-                  <div class="goal-title-row">
-                    <div class="goal-checkbox">
-                      <v-checkbox
-                        :model-value="goal.isCompleted"
-                        :color="goal.isCompleted ? 'success' : 'primary'"
-                        @update:model-value="toggleGoalStatus(goal)"
-                      />
+                <!-- 編集モード -->
+                <div v-if="editingGoalId === goal.id" class="goal-edit-form" @click.stop>
+                  <div class="goal-header">
+                    <div class="goal-info">
+                      <div class="goal-title-input mb-3">
+                        <label class="field-label mb-2">タイトル</label>
+                        <v-textarea
+                          v-model="editGoalData.title"
+                          placeholder="目標のタイトルを入力..."
+                          variant="filled"
+                          density="compact"
+                          :rows="1"
+                          class="title-input"
+                          auto-grow
+                          hide-details
+                        />
+                      </div>
+                      <v-row class="goal-meta">
+                        <v-col cols="12" sm="6" class="goal-assignee-input">
+                          <label class="field-label mb-2">担当者</label>
+                          <v-select
+                            v-model="editGoalData.assignee"
+                            :items="assigneeOptions"
+                            placeholder="担当者を選択"
+                            variant="filled"
+                            density="compact"
+                            class="assignee-input"
+                            hide-details
+                          />
+                        </v-col>
+                        <v-col cols="12" sm="6" class="goal-due-date-input">
+                          <label class="field-label mb-2">期限日</label>
+                          <v-text-field
+                            v-model="editGoalData.dueDate"
+                            type="date"
+                            placeholder="期限日を選択"
+                            variant="filled"
+                            density="compact"
+                            class="due-date-input"
+                            hide-details
+                          />
+                        </v-col>
+                      </v-row>
+                      <div class="goal-description-input mt-3">
+                        <label class="field-label mb-2">詳細説明（任意）</label>
+                        <v-textarea
+                          v-model="editGoalData.description"
+                          placeholder="詳細説明を入力..."
+                          variant="filled"
+                          density="compact"
+                          :rows="2"
+                          auto-grow
+                          class="description-input"
+                          hide-details
+                        />
+                      </div>
                     </div>
-                    <h3 class="goal-title" :class="{ 'completed': goal.isCompleted }">
-                      {{ goal.title }}
-                    </h3>
-                    <div class="goal-actions">
-                      <!-- 古いスワイプヒントを削除 -->
-                      <!-- コメント・ハートアイコンは一旦コメントアウト
-                      <v-btn
-                        icon="mdi-comment-outline"
-                        variant="text"
-                        size="small"
-                        @click="showComments(goal)"
-                        class="action-button"
-                      />
-                      <v-btn
-                        icon="mdi-heart-outline"
-                        variant="text"
-                        size="small"
-                        @click="toggleReaction(goal, 'heart')"
-                        :class="{ 'reaction-active': hasReaction(goal, 'heart') }"
-                        class="action-button"
-                      />
-                      -->
+                    <div class="goal-actions mt-3">
+                      <div class="d-flex justify-center align-center">
+                        <v-btn
+                          variant="outlined"
+                          size="small"
+                          icon="mdi-close"
+                          @click="cancelEditingGoal"
+                          class="cancel-button"
+                        />
+                        <v-btn
+                          color="primary"
+                          size="small"
+                          icon="mdi-check"
+                          @click="saveGoalEdit"
+                          :disabled="!editGoalData.title.trim() || !editGoalData.assignee?.trim() || !editGoalData.dueDate"
+                          class="save-button"
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div class="goal-info">
-                    <div class="goal-meta">
-                      <span v-if="goal.assignee" class="goal-assignee">
-                        <v-icon size="16" class="mr-1">mdi-account</v-icon>
-                        {{ goal.assignee }}
-                      </span>
-                      <span v-if="goal.dueDate" class="goal-due-date">
-                        {{ formatDate(goal.dueDate) }}
-                        <v-icon size="16" class="ml-1">mdi-calendar</v-icon>
-                      </span>
+                </div>
+
+                <!-- 表示モード -->
+                <div v-else>
+                  <!-- スワイプ状態バッジ（モバイル版のみ表示） -->
+                  <div v-if="isMobile" class="swipe-status-badge">
+                    <v-chip
+                      v-if="!goal.isCompleted"
+                      size="small"
+                      color="success"
+                      variant="outlined"
+                      class="swipe-hint-chip"
+                    >
+                      <v-icon size="14" start>mdi-chevron-right</v-icon>
+                      スワイプで完了
+                    </v-chip>
+                    <v-chip
+                      v-if="goal.isCompleted"
+                      size="small"
+                      color="warning"
+                      variant="outlined"
+                      class="swipe-hint-chip"
+                    >
+                      <v-icon size="14" start>mdi-chevron-left</v-icon>
+                      スワイプで戻す
+                    </v-chip>
+                  </div>
+
+                  <div class="goal-header">
+                    <div class="goal-title-row">
+                      <div class="goal-checkbox">
+                        <v-checkbox
+                          :model-value="goal.isCompleted"
+                          :color="goal.isCompleted ? 'success' : 'primary'"
+                          @update:model-value="toggleGoalStatus(goal)"
+                          @click.stop
+                        />
+                      </div>
+                      <h3 class="goal-title" :class="{ 'completed': goal.isCompleted }">
+                        {{ goal.title }}
+                      </h3>
+                      <div class="goal-actions">
+                        <!-- 古いスワイプヒントを削除 -->
+                        <!-- コメント・ハートアイコンは一旦コメントアウト
+                        <v-btn
+                          icon="mdi-comment-outline"
+                          variant="text"
+                          size="small"
+                          @click="showComments(goal)"
+                          class="action-button"
+                        />
+                        <v-btn
+                          icon="mdi-heart-outline"
+                          variant="text"
+                          size="small"
+                          @click="toggleReaction(goal, 'heart')"
+                          :class="{ 'reaction-active': hasReaction(goal, 'heart') }"
+                          class="action-button"
+                        />
+                        -->
+                      </div>
                     </div>
-                    <p v-if="goal.description" class="goal-description">
-                      {{ goal.description }}
-                    </p>
+                    <div class="goal-info">
+                      <div class="goal-meta">
+                        <span v-if="goal.assignee" class="goal-assignee">
+                          <v-icon size="16" class="mr-1">mdi-account</v-icon>
+                          {{ goal.assignee }}
+                        </span>
+                        <span v-if="goal.dueDate" class="goal-due-date">
+                          {{ formatDate(goal.dueDate) }}
+                          <v-icon size="16" class="ml-1">mdi-calendar</v-icon>
+                        </span>
+                      </div>
+                      <p v-if="goal.description" class="goal-description" v-html="convertUrlsToLinks(goal.description)">
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -557,7 +640,7 @@
     <!-- フッター -->
     <v-footer class="footer" color="dark">
       <v-container fluid>
-        <v-row>
+        <!-- <v-row>
           <v-col cols="12" md="6">
             <div class="footer-links">
               <a href="#" class="footer-link">よくある質問</a>
@@ -574,7 +657,7 @@
               <a href="#" class="footer-link">関連サイト</a>
             </div>
           </v-col>
-        </v-row>
+        </v-row> -->
         <v-row>
           <v-col cols="12" class="text-center">
             <p class="copyright">© 2025 Taskel</p>
@@ -602,9 +685,11 @@ const {
   // 状態
   isAddingGoal,
   isEditingSpace,
+  editingGoalId,
   sortOrder,
   filters,
   newGoal,
+  editGoalData,
   rules,
   spaceName,
   spaceDescription,
@@ -627,6 +712,11 @@ const {
   formatDate,
   startAddingGoal,
   cancelAddingGoal,
+  
+  // ゴール編集メソッド
+  startEditingGoal,
+  cancelEditingGoal,
+  saveGoalEdit,
   
   // スペース編集メソッド
   startEditingSpace,
@@ -675,6 +765,55 @@ const ogpDescription = computed(() => {
   }
   return 'Taskelは、友達や家族と目標を共有し、進捗を管理できるアプリです。会員登録不要で、すぐに利用できます。'
 })
+
+// URLをリンクに変換する関数
+const convertUrlsToLinks = (text: string): string => {
+  if (!text) return ''
+  
+  // URLを検出する正規表現（より包括的なパターン）
+  const urlRegex = /(https?:\/\/[^\s<>"{}|\\^`\[\]]+|www\.[^\s<>"{}|\\^`\[\]]+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s<>"{}|\\^`\[\]]*)?)/g
+  
+  return text.replace(urlRegex, (url) => {
+    // URLがhttpで始まらない場合はhttps://を追加
+    const href = url.startsWith('http') ? url : `https://${url}`
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="goal-link">${url}</a>`
+  })
+}
+
+// ゴールカードクリックハンドラー
+const handleGoalCardClick = (goal: any, event: Event) => {
+  console.log('handleGoalCardClick called with goal:', {
+    id: goal.id,
+    title: goal.title,
+    assignee: goal.assignee,
+    dueDate: goal.dueDate,
+    description: goal.description
+  })
+  
+  // チェックボックスやボタンがクリックされた場合は編集モードにしない
+  const target = event.target as HTMLElement
+  if (target.closest('.goal-checkbox') || target.closest('.goal-actions') || target.closest('button')) {
+    console.log('Click on checkbox/button, ignoring')
+    return
+  }
+  
+  // 編集フォーム内をクリックした場合は何もしない
+  if (target.closest('.goal-edit-form')) {
+    console.log('Click on edit form, ignoring')
+    return
+  }
+  
+  // 既に編集中の場合は編集をキャンセル
+  if (editingGoalId.value === goal.id) {
+    console.log('Already editing this goal, canceling edit')
+    cancelEditingGoal()
+    return
+  }
+  
+  // 編集モードを開始
+  console.log('Starting edit mode for goal:', goal.id)
+  startEditingGoal(goal)
+}
 
 // スペース情報が変更されたらOGPタグを更新
 watch([spaceName, spaceDescription], () => {
