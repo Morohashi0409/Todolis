@@ -55,6 +55,23 @@
   @media (max-width: $breakpoint-md) {
     margin-top: 56px; // タブレット以下
   }
+  
+  // Vuetifyコンポーネントのデフォルトマージン・パディングをリセット（中央揃えは保持）
+  .v-container {
+    padding: 0 !important;
+    margin: 0 auto !important; // 中央揃えを保持
+    max-width: 100% !important;
+  }
+  
+  .v-row {
+    margin: 0 !important;
+    justify-content: center !important; // 中央揃えを強制
+  }
+  
+  .v-col {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
 
   @media (max-width: $breakpoint-xs) {
     margin-top: 48px; // 極小画面
@@ -86,7 +103,11 @@
     background-size: 200% 200%; // アニメーション用に大きくする
     position: fixed !important;
     top: 0;
-    z-index: 1000;
+    left: 0;
+    right: 0;
+    z-index: 9999; // より高いz-indexに設定
+    width: 100%;
+    height: 80px; // ヘッダー高さを増やしてボーダーやシャドウを考慮
     // ガラス効果
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -131,20 +152,24 @@
     .header-container {
       position: relative;
       z-index: 2;
+      height: 80px; // ヘッダーの高さに合わせる
+      display: flex;
+      align-items: center;
       
       .header-content {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 1rem;
+        width: 100%;
       }
       
       .header-logo {
         height: 40px;
         width: auto;
-        // GSAPアニメーション用の初期状態
-        opacity: 0;
-        transform: scale(0) rotate(-180deg);
+        // アニメーション無効化 - 常に表示
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
         will-change: transform, opacity;
         transition: all 0.3s ease;
         
@@ -162,9 +187,9 @@
         text-shadow: 
           0 2px 4px rgba(0, 0, 0, 0.3),
           0 0 20px rgba(255, 255, 255, 0.5);
-        // タイトルアニメーション用の初期状態
-        opacity: 0;
-        transform: translateY(-30px);
+        // アニメーション無効化 - 常に表示
+        opacity: 1;
+        transform: translateY(0px);
         will-change: transform, opacity, scale, rotation, filter;
         perspective: 1000px;
         transform-style: preserve-3d;
@@ -198,41 +223,53 @@
     color: white;
     position: relative;
     overflow: hidden;
+    // ヘッダーとの重なりを完全に防ぐ
+    isolation: isolate;
     // 角丸と左右のガターを追加
     border-radius: 24px;
-    margin: 0 $spacing-lg;
+    margin: 20px $spacing-lg 0; // ヘッダーとの間隔を確保
     // ヘッダー分の余白を確保（固定ヘッダー対応）
-    // Vuetifyのv-app-barの標準的な高さ + 安全マージン
-    padding-top: calc(64px + 2rem); // デスクトップ用
+    // ヘッダー高さ80px + 安全マージン
+    padding: 120px $spacing-lg $spacing-xl; // 上下左右のパディングを設定
+    // ヘッダーが確実に上に表示されるようにz-indexを調整
+    z-index: 1;
 
     // レスポンシブ対応でヘッダー高さを調整
     @media (max-width: $breakpoint-lg) {
-      padding-top: calc(64px + 1.5rem);
+      padding: 100px $spacing-md $spacing-lg; // タブレット用
+      margin: 15px $spacing-md 0;
     }
 
     @media (max-width: $breakpoint-md) {
-      padding-top: calc(56px + 1.5rem); // タブレット用（v-app-barがより小さくなる）
+      padding: calc(56px + 1.5rem) $spacing-md $spacing-lg; // モバイル用
       border-radius: 20px;
-      margin: 0 $spacing-md;
+      margin: 10px $spacing-md 0;
     }
 
     @media (max-width: $breakpoint-sm) {
-      padding-top: calc(56px + 1rem); // スマートフォン用
+      padding: calc(56px + 1rem) $spacing-sm $spacing-md; // スマートフォン用
       border-radius: 16px;
-      margin: 0 $spacing-md;
+      margin: 5px $spacing-sm 0;
     }
 
     @media (max-width: $breakpoint-xs) {
-      padding-top: calc(48px + 1rem); // 極小画面用
+      padding: calc(48px + 1rem) $spacing-xs $spacing-sm; // 極小画面用
       border-radius: 12px;
-      margin: 0 $spacing-sm;
+      margin: 5px $spacing-xs 0;
     }
 
     .hero-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      
       .hero-content {
         min-height: calc(100vh - 64px - 2rem); // ヘッダー分を引いた高さ
         display: flex;
         align-items: center;
+        justify-content: center;
+        width: 100%;
         
         @media (max-width: $breakpoint-md) {
           min-height: calc(100vh - 56px - 1.5rem);
@@ -275,9 +312,9 @@
         line-height: 1.2;
         margin-bottom: $spacing-lg;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        // GSAPアニメーション用の初期状態
-        opacity: 0;
-        transform: translateY(50px);
+        // アニメーション無効化 - 常に表示
+        opacity: 1;
+        transform: translateY(0px);
       }
 
       .hero-subtitle {
@@ -286,8 +323,8 @@
         line-height: 1.6;
         margin-bottom: $spacing-xl;
         opacity: 0.9;
-        // GSAPアニメーション用の初期状態（後でGSAPで上書き）
-        transform: translateY(50px);
+        // アニメーション無効化 - 常に表示
+        transform: translateY(0px);
       }
 
       .hero-button {
@@ -297,9 +334,9 @@
         padding: $spacing-md $spacing-xl;
         border-radius: $border-radius-lg;
         transition: $transition-normal;
-        // GSAPアニメーション用の初期状態
-        opacity: 0;
-        transform: translateY(50px);
+        // アニメーション無効化 - 常に表示
+        opacity: 1;
+        transform: translateY(0px);
 
         &:hover {
           background: white !important;
@@ -312,17 +349,21 @@
 
   // 特徴紹介セクション
   .features-section {
-    padding: $spacing-xxl 0;
+    padding: $spacing-xxl $spacing-lg;
     background: $background-primary;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     .section-title {
       font-size: $font-size-xxl;
       font-weight: $font-weight-bold;
       color: $text-secondary;
       margin-bottom: $spacing-xxl;
-      // GSAPアニメーション用の初期状態
-      opacity: 0;
-      transform: translateY(30px);
+      // アニメーション無効化 - 常に表示
+      opacity: 1;
+      transform: translateY(0px);
     }
 
     .feature-card {
@@ -333,9 +374,9 @@
       align-items: center;
       justify-content: center;
       transition: $transition-normal;
-      // GSAPアニメーション用の初期状態
-      opacity: 0;
-      transform: translateY(50px) scale(0.8);
+      // アニメーション無効化 - 常に表示
+      opacity: 1;
+      transform: translateY(0px) scale(1);
 
       &:hover {
         transform: translateY(-4px);
@@ -349,8 +390,8 @@
         color: $grace-orange !important;
         // GSAPアニメーション用
         will-change: transform;
-        // フロートアニメーション用の初期状態
-        transform: rotate(-180deg) scale(0.5);
+        // アニメーション無効化 - 常に表示
+        transform: rotate(0deg) scale(1);
       }
 
       .feature-title {
@@ -372,12 +413,16 @@
 
   // 最近のグループセクション
   .recent-groups-section {
-    padding: $spacing-xxl 0;
+    padding: $spacing-xxl $spacing-lg;
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.9) 0%,
       rgba(248, 250, 252, 0.95) 100%
     );
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     border-top: 1px solid rgba(255, 171, 38, 0.1);
     border-bottom: 1px solid rgba(255, 171, 38, 0.1);
 
@@ -454,17 +499,21 @@
 
   // ユースケースセクション
   .usecases-section {
-    padding: $spacing-xxl 0;
+    padding: $spacing-xxl $spacing-lg;
     background: $background-secondary;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     .section-title {
       font-size: $font-size-xxl;
       font-weight: $font-weight-bold;
       color: $text-secondary;
       margin-bottom: $spacing-xxl;
-      // GSAPアニメーション用の初期状態
-      opacity: 0;
-      transform: translateY(30px);
+      // アニメーション無効化 - 常に表示
+      opacity: 1;
+      transform: translateY(0px);
     }
 
     .tags-container {
@@ -478,9 +527,9 @@
         color: $grace-orange !important;
         font-weight: $font-weight-medium;
         transition: $transition-normal;
-        // GSAPアニメーション用の初期状態
-        opacity: 0;
-        transform: translateY(30px) rotate(5deg);
+        // アニメーション無効化 - 常に表示
+        opacity: 1;
+        transform: translateY(0px) rotate(0deg);
         will-change: transform;
 
         &:hover {
@@ -493,17 +542,21 @@
 
   // 使い方セクション
   .howto-section {
-    padding: $spacing-xxl 0;
+    padding: $spacing-xxl $spacing-lg;
     background: $background-primary;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     .section-title {
       font-size: $font-size-xxl;
       font-weight: $font-weight-bold;
       color: $text-secondary;
       margin-bottom: $spacing-md;
-      // GSAPアニメーション用の初期状態
-      opacity: 0;
-      transform: translateY(30px);
+      // アニメーション無効化 - 常に表示
+      opacity: 1;
+      transform: translateY(0px);
     }
 
     .howto-subtitle {
@@ -518,9 +571,9 @@
       transition: $transition-normal;
       border-radius: $border-radius-lg;
       overflow: hidden;
-      // GSAPアニメーション用の初期状態
-      opacity: 0;
-      transform: translateX(-50px) rotateY(15deg);
+      // アニメーション無効化 - 常に表示
+      opacity: 1;
+      transform: translateX(0px) rotateY(0deg);
       will-change: transform;
 
       &:hover {
@@ -544,8 +597,8 @@
         font-size: $font-size-lg;
         font-weight: $font-weight-bold;
         margin: 0 auto $spacing-lg;
-        // GSAPアニメーション用の初期状態
-        transform: scale(0) rotate(180deg);
+        // アニメーション無効化 - 常に表示
+        transform: scale(1) rotate(0deg);
         will-change: transform;
       }
 
@@ -583,9 +636,9 @@
       border-radius: $border-radius-lg;
       box-shadow: $shadow-md;
       transition: $transition-normal;
-      // GSAPアニメーション用の初期状態（hero-buttonと同じレベルに調整）
-      opacity: 0;
-      transform: translateY(50px);
+      // アニメーション無効化 - 常に表示
+      opacity: 1;
+      transform: translateY(0px);
       will-change: transform;
 
       &:hover {
@@ -686,7 +739,7 @@
     .usecases-section,
     .howto-section,
     .partner-section {
-      padding: $spacing-xl 0;
+      padding: $spacing-xl $spacing-md;
     }
 
     .usecases-section {

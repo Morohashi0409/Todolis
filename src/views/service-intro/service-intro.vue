@@ -184,7 +184,7 @@
                   <v-icon size="80" color="primary">mdi-folder-plus</v-icon>
                 </div>
                 <p class="howto-description">
-                  まずはタスクグループページを作成します。プロジェクトのタイトルとメンバーを入力しましょう。秘密の計画には、PINコードも設定できます。
+                  まずはタスクグループページを作成します。プロジェクトのタイトルとメンバーを入力しましょう。
                 </p>
               </v-card-text>
             </v-card>
@@ -349,8 +349,12 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
   const reducedMotion = options?.reducedMotion ?? false
   const isMobile = options?.isMobile ?? false
 
-  // GSAP/ScrollTrigger のデフォルトを軽量設定
-  ScrollTrigger.defaults({ once: true })
+  // GSAP/ScrollTrigger のデフォルト設定（モバイルでは複数回実行可能）
+  ScrollTrigger.defaults({ 
+    once: !isMobile, // モバイルでは複数回実行可能
+    refreshPriority: isMobile ? 1 : -1, // モバイルでは優先度を上げる
+    fastScrollEnd: isMobile // モバイルでは早いスクロールに対応
+  })
 
   // reduced-motion の場合は重いアニメーションをスキップ
   if (reducedMotion) {
@@ -460,144 +464,152 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
     }
   }
   
-  // 特徴カードのスタッガーアニメーション
-  const featureCards = document.querySelectorAll('.feature-card')
-  if (featureCards.length > 0) {
-    gsap.set(featureCards, {
-      opacity: 0,
-      scale: 0.8,
-      y: 50
-    })
-    
-    ScrollTrigger.create({
-      trigger: '.features-section',
-      start: 'top bottom',
-      onEnter: () => {
-        gsap.to(featureCards, {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "back.out(1.7)",
-          stagger: 0.2
-        })
-      }
-    })
-  }
+  // 特徴カードのアニメーション（無効化）
+  // const featureCards = document.querySelectorAll('.feature-card')
+  // if (featureCards.length > 0) {
+  //   gsap.set(featureCards, {
+  //     opacity: 0,
+  //     scale: 0.8,
+  //     y: 50
+  //   })
+  //   
+  //   ScrollTrigger.create({
+  //     trigger: '.features-section',
+  //     start: 'top bottom',
+  //     once: !isMobile, // モバイルでは複数回実行可能
+  //     toggleActions: isMobile ? "play none none reverse" : "play none none none",
+  //     onEnter: () => {
+  //       gsap.to(featureCards, {
+  //         opacity: 1,
+  //         scale: 1,
+  //         y: 0,
+  //         duration: 0.8,
+  //         ease: "back.out(1.7)",
+  //         stagger: 0.2
+  //       })
+  //     }
+  //   })
+  // }
   
-  // ユースケースタグの波状アニメーション
-  const usecaseTags = document.querySelectorAll('.usecase-tag')
-  if (usecaseTags.length > 0) {
-    gsap.set(usecaseTags, {
-      opacity: 0,
-      y: 30,
-      rotation: 5
-    })
-    
-    ScrollTrigger.create({
-      trigger: '.usecases-section',
-      start: 'top bottom',
-      onEnter: () => {
-        gsap.to(usecaseTags, {
-          opacity: 1,
-          y: 0,
-          rotation: 0,
-          duration: 0.6,
-          ease: "elastic.out(1, 0.5)",
-          stagger: {
-            amount: 1.5,
-            from: "center"
-          }
-        })
-        
-        // ホバー対応デバイスでのみイベントを登録
-        if (window.matchMedia('(hover: hover)').matches) {
-          usecaseTags.forEach(tag => {
-            tag.addEventListener('mouseenter', () => {
-              gsap.to(tag, {
-                scale: 1.1,
-                rotation: 2,
-                duration: 0.3,
-                ease: "power2.out"
-              })
-            })
-            
-            tag.addEventListener('mouseleave', () => {
-              gsap.to(tag, {
-                scale: 1,
-                rotation: 0,
-                duration: 0.3,
-                ease: "power2.out"
-              })
-            })
-          })
-        }
-      }
-    })
-  }
+  // ユースケースタグのアニメーション（無効化）
+  // const usecaseTags = document.querySelectorAll('.usecase-tag')
+  // if (usecaseTags.length > 0) {
+  //   gsap.set(usecaseTags, {
+  //     opacity: 0,
+  //     y: 30,
+  //     rotation: 5
+  //   })
+  //   
+  //   ScrollTrigger.create({
+  //     trigger: '.usecases-section',
+  //     start: 'top bottom',
+  //     once: !isMobile, // モバイルでは複数回実行可能
+  //     toggleActions: isMobile ? "play none none reverse" : "play none none none",
+  //     onEnter: () => {
+  //       gsap.to(usecaseTags, {
+  //         opacity: 1,
+  //         y: 0,
+  //         rotation: 0,
+  //         duration: 0.6,
+  //         ease: "elastic.out(1, 0.5)",
+  //         stagger: {
+  //           amount: 1.5,
+  //           from: "center"
+  //         }
+  //       })
+  //       
+  //       // ホバー対応デバイスでのみイベントを登録
+  //       if (window.matchMedia('(hover: hover)').matches) {
+  //         usecaseTags.forEach(tag => {
+  //           tag.addEventListener('mouseenter', () => {
+  //             gsap.to(tag, {
+  //               scale: 1.1,
+  //               rotation: 2,
+  //               duration: 0.3,
+  //               ease: "power2.out"
+  //             })
+  //           })
+  //           
+  //           tag.addEventListener('mouseleave', () => {
+  //             gsap.to(tag, {
+  //               scale: 1,
+  //               rotation: 0,
+  //               duration: 0.3,
+  //               ease: "power2.out"
+  //             })
+  //           })
+  //         })
+  //       }
+  //     }
+  //   })
+  // }
   
-  // 使い方セクションのステップバイステップアニメーション
-  const howtoCards = document.querySelectorAll('.howto-card')
-  const stepNumbers = document.querySelectorAll('.step-number')
+  // 使い方セクションのアニメーション（無効化）
+  // const howtoCards = document.querySelectorAll('.howto-card')
+  // const stepNumbers = document.querySelectorAll('.step-number')
+  // 
+  // if (howtoCards.length > 0) {
+  //   gsap.set(howtoCards, {
+  //     opacity: 0,
+  //     x: -50,
+  //     rotationY: 15
+  //   })
+  //   
+  //   gsap.set(stepNumbers, {
+  //     scale: 0,
+  //     rotation: 180
+  //   })
+  //   
+  //   ScrollTrigger.create({
+  //     trigger: '.howto-section',
+  //     start: 'top bottom',
+  //     once: !isMobile, // モバイルでは複数回実行可能
+  //     toggleActions: isMobile ? "play none none reverse" : "play none none none",
+  //     onEnter: () => {
+  //       // カードのアニメーション
+  //       gsap.to(howtoCards, {
+  //         opacity: 1,
+  //         x: 0,
+  //         rotationY: 0,
+  //         duration: 1,
+  //         ease: "power3.out",
+  //         stagger: 0.3
+  //       })
+  //       
+  //       // ステップ番号のアニメーション
+  //       gsap.to(stepNumbers, {
+  //         scale: 1,
+  //         rotation: 0,
+  //         duration: 0.8,
+  //         ease: "back.out(2)",
+  //         stagger: 0.3,
+  //         delay: 0.2
+  //       })
+  //     }
+  //   })
+  // }
   
-  if (howtoCards.length > 0) {
-    gsap.set(howtoCards, {
-      opacity: 0,
-      x: -50,
-      rotationY: 15
-    })
-    
-    gsap.set(stepNumbers, {
-      scale: 0,
-      rotation: 180
-    })
-    
-    ScrollTrigger.create({
-      trigger: '.howto-section',
-      start: 'top bottom',
-      onEnter: () => {
-        // カードのアニメーション
-        gsap.to(howtoCards, {
-          opacity: 1,
-          x: 0,
-          rotationY: 0,
-          duration: 1,
-          ease: "power3.out",
-          stagger: 0.3
-        })
-        
-        // ステップ番号のアニメーション
-        gsap.to(stepNumbers, {
-          scale: 1,
-          rotation: 0,
-          duration: 0.8,
-          ease: "back.out(2)",
-          stagger: 0.3,
-          delay: 0.2
-        })
-      }
-    })
-  }
-  
-  // CTAボタンのアニメーション
-  const ctaButton = document.querySelector('.cta-button')
-  if (ctaButton) {
-    ScrollTrigger.create({
-      trigger: ctaButton,
-      start: 'top bottom',
-      onEnter: () => {
-        gsap.fromTo(ctaButton, {
-          opacity: 0,
-          y: 50
-        }, {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out"
-        })
-      }
-    })
-  }
+  // CTAボタンのアニメーション（無効化）
+  // const ctaButton = document.querySelector('.cta-button')
+  // if (ctaButton) {
+  //   ScrollTrigger.create({
+  //     trigger: ctaButton,
+  //     start: 'top bottom',
+  //     once: !isMobile, // モバイルでは複数回実行可能
+  //     toggleActions: isMobile ? "play none none reverse" : "play none none none",
+  //     onEnter: () => {
+  //       gsap.fromTo(ctaButton, {
+  //         opacity: 0,
+  //         y: 50
+  //       }, {
+  //         opacity: 1,
+  //         y: 0,
+  //         duration: 1,
+  //         ease: "power3.out"
+  //       })
+  //     }
+  //   })
+  // }
   
   // パララックス効果（モバイルは無効）
   if (!isMobile) {
@@ -613,69 +625,73 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
     })
   }
   
-  // セクションタイトルのアニメーション
-  const sectionTitles = document.querySelectorAll('.section-title')
-  sectionTitles.forEach(title => {
-    gsap.set(title, {
-      opacity: 0,
-      y: 30
-    })
-    
-    ScrollTrigger.create({
-      trigger: title,
-      start: 'top bottom',
-      onEnter: () => {
-        gsap.to(title, {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out"
-        })
-      }
-    })
-  })
+  // セクションタイトルのアニメーション（無効化）
+  // const sectionTitles = document.querySelectorAll('.section-title')
+  // sectionTitles.forEach(title => {
+  //   gsap.set(title, {
+  //     opacity: 0,
+  //     y: 30
+  //   })
+  //   
+  //   ScrollTrigger.create({
+  //     trigger: title,
+  //     start: 'top bottom',
+  //     once: !isMobile, // モバイルでは複数回実行可能
+  //     toggleActions: isMobile ? "play none none reverse" : "play none none none",
+  //     onEnter: () => {
+  //       gsap.to(title, {
+  //         opacity: 1,
+  //         y: 0,
+  //         duration: 1,
+  //         ease: "power3.out"
+  //       })
+  //     }
+  //   })
+  // })
   
-  // アイコンの回転アニメーション
-  const featureIcons = document.querySelectorAll('.feature-icon')
-  featureIcons.forEach(icon => {
-    ScrollTrigger.create({
-      trigger: icon,
-      start: 'top bottom',
-      onEnter: () => {
-        gsap.fromTo(icon, {
-          rotation: -180,
-          scale: 0.5
-        }, {
-          rotation: 0,
-          scale: 1,
-          duration: 1.2,
-          ease: "back.out(1.7)"
-        })
-      }
-    })
-  })
+  // アイコンの回転アニメーション（無効化）
+  // const featureIcons = document.querySelectorAll('.feature-icon')
+  // featureIcons.forEach(icon => {
+  //   ScrollTrigger.create({
+  //     trigger: icon,
+  //     start: 'top bottom',
+  //     once: !isMobile, // モバイルでは複数回実行可能
+  //     toggleActions: isMobile ? "play none none reverse" : "play none none none",
+  //     onEnter: () => {
+  //       gsap.fromTo(icon, {
+  //         rotation: -180,
+  //         scale: 0.5
+  //       }, {
+  //         rotation: 0,
+  //         scale: 1,
+  //         duration: 1.2,
+  //         ease: "back.out(1.7)"
+  //       })
+  //     }
+  //   })
+  // })
   
-  // フロートアニメーション（モバイルはスキップ）
-  if (!isMobile) {
-    gsap.to('.feature-icon', {
-      y: -10,
-      duration: 3,
-      ease: "power2.inOut",
-      yoyo: true,
-      repeat: -1,
-      stagger: 0.5
-    })
-    
-    gsap.to('.howto-image .v-icon', {
-      y: -5,
-      rotation: 5,
-      duration: 4,
-      ease: "power2.inOut",
-      yoyo: true,
-      repeat: -1,
-      stagger: 0.8
-    })
-  }
+  // フロートアニメーション（無効化）
+  // if (!isMobile) {
+  //   gsap.to('.feature-icon', {
+  //     y: -10,
+  //     duration: 3,
+  //     ease: "power2.inOut",
+  //     yoyo: true,
+  //     repeat: -1,
+  //     stagger: 0.5
+  //   })
+  //   
+  //   gsap.to('.howto-image .v-icon', {
+  //     y: -5,
+  //     rotation: 5,
+  //     duration: 4,
+  //     ease: "power2.inOut",
+  //     yoyo: true,
+  //     repeat: -1,
+  //     stagger: 0.8
+  //   })
+  // }
   
   // ヘッダーのスクロール効果（モバイルでは軽減）
   const headerElement = document.querySelector('.header')
