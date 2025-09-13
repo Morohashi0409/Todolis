@@ -1228,14 +1228,6 @@
             flex: 1;
             color: $text-primary;
           }
-
-          .remove-button {
-            color: $main-color !important;
-            
-            &:hover {
-              background: $main-color-alpha-10;
-            }
-          }
         }
       }
     }

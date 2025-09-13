@@ -526,16 +526,6 @@
                 >
                   <span class="member-number">メンバー{{ index + 1 }}：</span>
                   <span class="member-name">{{ member }}</span>
-                  <v-btn
-                    icon="mdi-close"
-                    size="small"
-                    variant="text"
-                    color="error"
-                    @click="removeEditMember(index)"
-                    class="remove-button"
-                  >
-                    <v-icon>mdi-close</v-icon>
-                  </v-btn>
                 </div>
               </div>
             </div>
@@ -640,7 +630,6 @@ const {
   startEditingSpace,
   cancelEditingSpace,
   addEditMember,
-  removeEditMember,
   saveSpaceEdit,
   
   // 再取得メソッド

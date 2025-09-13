@@ -793,9 +793,6 @@ export const useGoalDisplay = () => {
     }
   }
 
-  const removeEditMember = (index: number) => {
-    editSpaceMemberList.value.splice(index, 1)
-  }
 
   const saveSpaceEdit = async () => {
     try {
@@ -915,7 +912,6 @@ export const useGoalDisplay = () => {
     startEditingSpace,
     cancelEditingSpace,
     addEditMember,
-    removeEditMember,
     saveSpaceEdit,
     
     // 再取得メソッド

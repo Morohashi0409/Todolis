@@ -230,30 +230,30 @@
     margin: 20px $spacing-lg 0; // ヘッダーとの間隔を確保
     // ヘッダー分の余白を確保（固定ヘッダー対応）
     // ヘッダー高さ80px + 安全マージン
-    padding: 120px $spacing-lg $spacing-xl; // 上下左右のパディングを設定
+    padding: 30px $spacing-lg 40px; // 上下左右のパディングを設定
     // ヘッダーが確実に上に表示されるようにz-indexを調整
     z-index: 1;
 
     // レスポンシブ対応でヘッダー高さを調整
     @media (max-width: $breakpoint-lg) {
-      padding: 100px $spacing-md $spacing-lg; // タブレット用
+      padding: 25px $spacing-md 30px; // タブレット用
       margin: 15px $spacing-md 0;
     }
 
     @media (max-width: $breakpoint-md) {
-      padding: calc(56px + 1.5rem) $spacing-md $spacing-lg; // モバイル用
+      padding: calc(56px + 0.5rem) $spacing-md 30px; // モバイル用
       border-radius: 20px;
       margin: 10px $spacing-md 0;
     }
 
     @media (max-width: $breakpoint-sm) {
-      padding: calc(56px + 1rem) $spacing-sm $spacing-md; // スマートフォン用
+      padding: calc(56px + 0.25rem) $spacing-sm 20px; // スマートフォン用
       border-radius: 16px;
       margin: 5px $spacing-sm 0;
     }
 
     @media (max-width: $breakpoint-xs) {
-      padding: calc(48px + 1rem) $spacing-xs $spacing-sm; // 極小画面用
+      padding: calc(48px + 0.25rem) $spacing-xs 20px; // 極小画面用
       border-radius: 12px;
       margin: 5px $spacing-xs 0;
     }
