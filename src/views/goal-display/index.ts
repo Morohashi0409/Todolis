@@ -188,30 +188,73 @@ export const useGoalDisplay = () => {
   // }
 
 
+  // モバイル判定（リアクティブな値として管理）
+  const isMobile = ref(false)
+  
+  const checkIsMobile = () => {
+    // より厳密なモバイル判定
+    const userAgent = navigator.userAgent
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+    const isSmallScreen = window.innerWidth <= 768
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    
+    // PC版の条件：モバイルデバイスでなく、大きな画面、かつタッチデバイスでない
+    isMobile.value = isMobileDevice || (isSmallScreen && isTouchDevice)
+  }
+  
+  // 初期化とリサイズイベントの監視
+  checkIsMobile()
+  window.addEventListener('resize', checkIsMobile)
+
   // スワイプ機能用のヘルパー
   const createSwipeHandler = (goal: Goal) => {
+    // モバイル版でない場合はスワイプ機能を無効化
+    if (!isMobile.value) {
+      return {
+        getTouchEventHandlers: () => ({})
+      }
+    }
+
+    let lastProgress = 0
+    let lastDirection: 'left' | 'right' | 'none' = 'none'
+    
     return useSwipeGesture({
-      threshold: 40, // iPhone用により小さな閾値
+      threshold: 50, // 半分（50%）の閾値
       maxDistance: 100, // iPhone用により小さな最大距離
       onSwipeLeft: () => {
-        // 左スワイプ：TODOに戻す（完了済みの場合のみ）
-        if (goal.isCompleted) {
-          performSwipeAction(goal, false, 'left')
-        }
+        // 左スワイプ：onSwipeEndで自動判定するため、ここでは何もしない
+        // if (goal.isCompleted) {
+        //   performSwipeAction(goal, false, 'left')
+        // }
       },
       onSwipeRight: () => {
-        // 右スワイプ：完了にする（未完了の場合のみ）
-        if (!goal.isCompleted) {
-          performSwipeAction(goal, true, 'right')
-        }
+        // 右スワイプ：onSwipeEndで自動判定するため、ここでは何もしない
+        // if (!goal.isCompleted) {
+        //   performSwipeAction(goal, true, 'right')
+        // }
       },
       onSwipeProgress: (progress: number, direction: 'left' | 'right' | 'none') => {
         // スワイプ中の視覚的フィードバック
+        lastProgress = progress
+        lastDirection = direction
         updateSwipeVisuals(goal.id, progress, direction)
       },
       onSwipeEnd: () => {
+        // スワイプ終了時の自動アクション実行
+        if (lastProgress > 0.5 && lastDirection !== 'none') {
+          if (lastDirection === 'right' && !goal.isCompleted) {
+            // 右スワイプが半分以上：完了にする
+            performSwipeAction(goal, true, 'right')
+          } else if (lastDirection === 'left' && goal.isCompleted) {
+            // 左スワイプが半分以上：TODOに戻す
+            performSwipeAction(goal, false, 'left')
+          }
+        }
+        
         // スワイプ終了時の状態リセット
         resetSwipeVisuals(goal.id)
+        lastProgress = 0
+        lastDirection = 'none'
       }
     })
   }
@@ -247,7 +290,7 @@ export const useGoalDisplay = () => {
       } else {
         backgroundRight.classList.remove('active')
       }
-      content.style.transform = `translateX(${progress * 30}px)` // より小さな移動距離
+      content.style.transform = `translateX(${progress * 100}%)` // 全体の幅に移動
     } else if (direction === 'left' && backgroundLeft) {
       // 左スワイプ（未完了）- より小さな移動でもフィードバック
       backgroundLeft.style.opacity = (progress * 0.95).toString()
@@ -256,7 +299,7 @@ export const useGoalDisplay = () => {
       } else {
         backgroundLeft.classList.remove('active')
       }
-      content.style.transform = `translateX(-${progress * 30}px)` // より小さな移動距離
+      content.style.transform = `translateX(-${progress * 100}%)` // 全体の幅に移動
     }
 
     // スワイプ中のクラス追加
@@ -882,7 +925,8 @@ export const useGoalDisplay = () => {
     
     // スワイプ関連
     createSwipeHandler,
-    swipeAnimations
+    swipeAnimations,
+    isMobile
     // リアクション機能 - 一時的にコメントアウト
     // ,
     // REACTION_EMOJIS,

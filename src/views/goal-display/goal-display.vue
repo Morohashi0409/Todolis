@@ -328,8 +328,8 @@
               <v-card-text 
                 class="goal-content pa-3"
               >
-                <!-- スワイプ状態バッジ -->
-                <div class="swipe-status-badge">
+                <!-- スワイプ状態バッジ（モバイル版のみ表示） -->
+                <div v-if="isMobile" class="swipe-status-badge">
                   <v-chip
                     v-if="!goal.isCompleted"
                     size="small"
@@ -651,6 +651,7 @@ const {
   // スワイプ関連
   createSwipeHandler,
   swipeAnimations,
+  isMobile,
   // リアクション - 一時的にコメントアウト
   // REACTION_EMOJIS,
   // getReactionCountFor,
