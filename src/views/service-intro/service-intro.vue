@@ -612,18 +612,18 @@ const initAnimations = (options?: { reducedMotion: boolean; isMobile: boolean })
   // }
   
   // パララックス効果（モバイルは無効）
-  if (!isMobile) {
-    gsap.to('.hero-section', {
-      yPercent: -50,
-      ease: "none",
-      scrollTrigger: {
-        trigger: '.hero-section',
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true
-      }
-    })
-  }
+  // if (!isMobile) {
+  //   gsap.to('.hero-section', {
+  //     yPercent: -50,
+  //     ease: "none",
+  //     scrollTrigger: {
+  //       trigger: '.hero-section',
+  //       start: 'top bottom',
+  //       end: 'bottom top',
+  //       scrub: true
+  //     }
+  //   })
+  // }
   
   // セクションタイトルのアニメーション（無効化）
   // const sectionTitles = document.querySelectorAll('.section-title')
