@@ -1,0 +1,612 @@
+# Taskel プロジェクト開発ルール・ガイドライン
+
+## プロジェクト概要
+
+**Taskel**は、友達や家族と目標を共有し、進捗を管理できるWebアプリケーションです。会員登録不要で、リンクを共有するだけで利用開始できるシンプルな設計が特徴です。
+
+## 技術スタック
+
+- **フロントエンド**: Vue.js 3 + TypeScript + Vuetify 3
+- **ビルドツール**: Vite
+- **状態管理**: Pinia
+- **ルーティング**: Vue Router 4
+- **スタイリング**: SCSS
+- **アニメーション**: GSAP
+- **アイコン**: Material Design Icons (MDI)
+
+## プロジェクト構造
+
+### ディレクトリ構成
+
+```
+src/
+├── components/          # 再利用可能なコンポーネント
+│   └── AppHeader/       # ヘッダーコンポーネント
+│       ├── AppHeader.vue
+│       └── index.ts
+├── views/               # ページコンポーネント
+│   ├── service-intro/   # サービス紹介ページ
+│   ├── group-creation/  # グループ作成ページ
+│   ├── link-display/    # リンク表示ページ
+│   └── goal-display/    # 目標表示ページ
+├── stores/              # Piniaストア
+│   ├── goal.ts
+│   └── space.ts
+├── api/                 # API接続機能
+│   ├── client.ts
+│   ├── spaces.ts
+│   ├── goals.ts
+│   ├── comments.ts
+│   ├── reactions.ts
+│   └── types.ts
+├── types/               # TypeScript型定義
+│   └── index.ts
+├── utils/               # ユーティリティ関数
+│   ├── localStorage.ts
+│   ├── ogp.ts
+│   └── useSwipeGesture.ts
+├── composables/         # Vue Composables
+│   └── useOGP.ts
+├── styles/              # グローバルスタイル
+│   ├── colors.scss
+│   └── variables.scss
+└── router/              # ルーティング設定
+    └── index.ts
+```
+
+## コンポーネント構造ルール
+
+### 1フォルダ3ファイル構造
+
+各コンポーネントは以下の3ファイルで構成されます：
+
+```
+ComponentName/
+├── ComponentName.vue    # メインコンポーネント
+├── ComponentName.scss   # スタイルファイル
+└── index.ts            # エクスポート用インデックス
+```
+
+**例:**
+```
+AppHeader/
+├── AppHeader.vue
+├── AppHeader.scss
+└── index.ts
+```
+
+### インデックスファイルの書き方
+
+```typescript
+// index.ts
+export { default } from './ComponentName.vue'
+```
+
+### コンポーネントの命名規則
+
+- **ファイル名**: PascalCase (例: `AppHeader.vue`)
+- **コンポーネント名**: PascalCase (例: `AppHeader`)
+- **フォルダ名**: PascalCase (例: `AppHeader/`)
+
+## スタイリングルール
+
+### SCSSファイル構造
+
+```scss
+// ComponentName.scss
+@import "@/styles/variables.scss";
+
+.component-name {
+  // スタイル定義
+}
+```
+
+### カラーパレット
+
+`src/styles/colors.scss`で定義された統一カラーパレットを使用：
+
+```scss
+// メインカラー
+$main-color: #DC4409; // 温かみのあるオレンジ色
+
+// テキストカラー
+$text-primary: #FFFFFF;        // 白（主要タイトル/ボタン等）
+$text-secondary: #333333;      // 濃いグレー（補助・説明文）
+
+// 背景色
+$background-main: #FFFFFF;     // 白（メイン画面背景）
+$background-light: #F8F8F8;   // ごく薄いグレー
+
+// ライン・分割線色
+$border-color: #E0E0E0;        // 薄グレー
+```
+
+### カラー使用ルール
+
+1. **ハードコード禁止**: 直接カラーコードを記述せず、必ず変数を使用
+2. **CSS変数対応**: JavaScriptからもアクセス可能なCSS変数も提供
+3. **後方互換性**: 既存の変数名も引き続き使用可能
+
+```scss
+// ✅ 正しい書き方
+.my-component {
+  background-color: $main-color;
+  color: $text-primary;
+  border: 1px solid $border-color;
+}
+
+// ❌ 間違った書き方
+.my-component {
+  background-color: #DC4409;
+  color: #FFFFFF;
+}
+```
+
+## API接続ルール
+
+### APIクライアント
+
+`src/api/client.ts`で定義されたHTTPクライアントを使用：
+
+```typescript
+import { apiClient } from '@/api/client'
+
+// GETリクエスト
+const response = await apiClient.get<ResponseType>('/api/endpoint')
+
+// POSTリクエスト
+const response = await apiClient.post<ResponseType>('/api/endpoint', data)
+```
+
+### API実装パターン
+
+各API機能は以下の構造で実装：
+
+```typescript
+// api/feature.ts
+import { apiClient, validateResponse } from './client'
+import type { FeatureRequest, FeatureResponse } from './types'
+
+export async function createFeature(data: FeatureRequest): Promise<FeatureResponse> {
+  try {
+    const response = await apiClient.post<FeatureResponse>('/api/feature', data)
+    return validateResponse(response)
+  } catch (error) {
+    console.error('Failed to create feature:', error)
+    throw error
+  }
+}
+```
+
+### エラーハンドリング
+
+```typescript
+try {
+  const result = await apiCall()
+  // 成功処理
+} catch (error) {
+  console.error('API call failed:', error)
+  // エラー処理
+  if (error instanceof ApiError) {
+    // 特定のエラーハンドリング
+  }
+}
+```
+
+## 状態管理ルール
+
+### Piniaストア
+
+```typescript
+// stores/feature.ts
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+
+export const useFeatureStore = defineStore('feature', () => {
+  const data = ref<FeatureType[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+
+  const computedValue = computed(() => {
+    // 計算プロパティ
+  })
+
+  const action = () => {
+    // アクション
+  }
+
+  return {
+    data,
+    loading,
+    error,
+    computedValue,
+    action
+  }
+})
+```
+
+### Composables
+
+```typescript
+// composables/useFeature.ts
+import { ref, reactive } from 'vue'
+
+export const useFeature = () => {
+  const state = ref('')
+  const data = reactive({})
+
+  const method = () => {
+    // メソッド
+  }
+
+  return {
+    state,
+    data,
+    method
+  }
+}
+```
+
+## ルーティングルール
+
+### ルート定義
+
+```typescript
+// router/index.ts
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/',
+    name: 'ServiceIntro',
+    component: () => import('@/views/service-intro/service-intro.vue'),
+    meta: {
+      title: 'Taskel - 続ける力を、シェアしよう'
+    }
+  }
+]
+```
+
+### ページタイトル設定
+
+```typescript
+router.beforeEach((to, _from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title as string
+  }
+  next()
+})
+```
+
+## アニメーションルール
+
+### GSAP使用
+
+```typescript
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
+// アニメーション定義
+const initAnimations = () => {
+  gsap.fromTo('.element', {
+    opacity: 0,
+    y: 50
+  }, {
+    opacity: 1,
+    y: 0,
+    duration: 1,
+    ease: "power3.out"
+  })
+}
+```
+
+### アニメーション制御
+
+- **モバイル対応**: モバイルでは重いアニメーションを無効化
+- **アクセシビリティ**: `prefers-reduced-motion`に対応
+- **パフォーマンス**: 必要に応じてアニメーションを無効化
+
+## 型定義ルール
+
+### API型定義
+
+```typescript
+// api/types.ts
+export interface CreateRequest {
+  title: string
+  description?: string
+}
+
+export interface CreateResponse {
+  id: string
+  message: string
+}
+```
+
+### コンポーネント型定義
+
+```typescript
+// types/index.ts
+export interface ComponentProps {
+  title: string
+  description?: string
+  onAction?: () => void
+}
+```
+
+## ユーティリティルール
+
+### LocalStorage管理
+
+```typescript
+// utils/localStorage.ts
+export interface StoredData {
+  id: string
+  name: string
+  lastVisited: Date
+}
+
+export const getStoredData = (): StoredData[] => {
+  try {
+    const stored = localStorage.getItem('key')
+    return stored ? JSON.parse(stored) : []
+  } catch (error) {
+    console.error('Failed to load data:', error)
+    return []
+  }
+}
+```
+
+### OGP管理
+
+```typescript
+// utils/ogp.ts
+export interface OGPData {
+  title: string
+  description: string
+  image?: string
+  url?: string
+}
+
+export function updateOGPTags(data: OGPData) {
+  // OGPタグ更新処理
+}
+```
+
+## 開発環境設定
+
+### Vite設定
+
+```typescript
+// vite.config.ts
+export default defineConfig({
+  plugins: [vue()],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src'),
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "@/styles/variables.scss";`,
+      },
+    },
+  },
+})
+```
+
+### TypeScript設定
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+## コーディング規約
+
+### Vue 3 Composition API
+
+```vue
+<template>
+  <div class="component">
+    <!-- テンプレート -->
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, computed, onMounted } from 'vue'
+
+// リアクティブデータ
+const data = ref('')
+const state = reactive({})
+
+// 計算プロパティ
+const computedValue = computed(() => {
+  return data.value
+})
+
+// メソッド
+const method = () => {
+  // 処理
+}
+
+// ライフサイクル
+onMounted(() => {
+  // 初期化処理
+})
+</script>
+
+<style lang="scss" scoped>
+@import "@/styles/variables.scss";
+
+.component {
+  // スタイル
+}
+</style>
+```
+
+### 命名規則
+
+- **変数・関数**: camelCase
+- **定数**: UPPER_SNAKE_CASE
+- **型・インターフェース**: PascalCase
+- **ファイル名**: kebab-case (Vueファイルは除く)
+
+### インポート順序
+
+```typescript
+// 1. Vue関連
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+
+// 2. 外部ライブラリ
+import { gsap } from 'gsap'
+
+// 3. 内部モジュール
+import { apiClient } from '@/api/client'
+import { useStore } from '@/stores/store'
+
+// 4. 型定義
+import type { ComponentProps } from '@/types'
+```
+
+## テスト・品質管理
+
+### リント・フォーマット
+
+```bash
+# リント実行
+npm run lint
+
+# 自動修正
+npm run lint:fix
+
+# 型チェック
+npm run type-check
+```
+
+### ビルド
+
+```bash
+# 開発ビルド
+npm run build:dev
+
+# 本番ビルド
+npm run build:prod
+```
+
+## デプロイメント
+
+### 環境設定
+
+- **開発環境**: `npm run dev`
+- **ステージング**: `npm run build:staging`
+- **本番環境**: `npm run build:prod`
+
+### 静的ファイル
+
+- **出力先**: `dist/`ディレクトリ
+- **ソースマップ**: 開発時のみ有効
+- **圧縮**: 本番ビルドで有効
+
+## セキュリティ考慮事項
+
+### API接続
+
+- **トークン管理**: 適切なトークン検証
+- **エラーハンドリング**: 機密情報の漏洩防止
+- **CORS設定**: 適切なオリジン設定
+
+### データ保護
+
+- **LocalStorage**: 機密情報の保存禁止
+- **入力検証**: クライアント・サーバー両方で実装
+- **XSS対策**: 適切なエスケープ処理
+
+## パフォーマンス最適化
+
+### コード分割
+
+```typescript
+// 動的インポート
+const Component = () => import('@/views/Component.vue')
+```
+
+### 画像最適化
+
+- **WebP形式**: 対応ブラウザで使用
+- **遅延読み込み**: 必要に応じて実装
+- **適切なサイズ**: 用途に応じた解像度
+
+### バンドル最適化
+
+- **Tree Shaking**: 未使用コードの除去
+- **圧縮**: Gzip/Brotli圧縮
+- **キャッシュ**: 適切なキャッシュ戦略
+
+## アクセシビリティ
+
+### キーボード操作
+
+- **Tab順序**: 適切なフォーカス順序
+- **キーボードショートカット**: 主要機能で提供
+- **フォーカス表示**: 視覚的なフォーカス表示
+
+### スクリーンリーダー
+
+- **ARIA属性**: 適切なラベル設定
+- **セマンティックHTML**: 意味のある要素使用
+- **alt属性**: 画像の代替テキスト
+
+## ブラウザ対応
+
+### 対応ブラウザ
+
+- **Chrome**: 最新版
+- **Firefox**: 最新版
+- **Safari**: 最新版
+- **Edge**: 最新版
+
+### モバイル対応
+
+- **レスポンシブデザイン**: 全デバイス対応
+- **タッチ操作**: スワイプジェスチャー対応
+- **パフォーマンス**: モバイル最適化
+
+## トラブルシューティング
+
+### よくある問題
+
+1. **ビルドエラー**: 型定義の確認
+2. **スタイル適用**: SCSS変数の確認
+3. **API接続**: エンドポイントの確認
+4. **ルーティング**: パスの確認
+
+### デバッグ方法
+
+```typescript
+// コンソールログ
+console.log('Debug info:', data)
+
+// 開発者ツール
+// Vue DevTools使用
+```
+
+## 更新履歴
+
+- **2025-01-XX**: 初版作成
+- **カラー統一**: colors.scssによる統一
+- **API接続**: 完全なAPI実装
+- **型定義**: TypeScript完全対応
+
+---
+
+このドキュメントは、Taskelプロジェクトの開発における統一されたルールとガイドラインを定義しています。新しい機能を追加する際は、このドキュメントに従って実装してください。
